@@ -1,0 +1,36 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "declaration": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "sourceMap": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "outDir": "dist"
+  },
+  "references": [
+    {
+      "path": "./packages/blockchain-library"
+    },
+    {
+      "path": "./packages/message-broker-library"
+    },
+    {
+      "path": "./packages/fordefi-library"
+    },
+    {
+      "path": "./packages/blockchain-listener"
+    },
+    {
+      "path": "./packages/message-handler"
+    },
+    {
+      "path": "./packages/webhooks"
+    }
+  ],
+  "compileOnSave": true
+}
