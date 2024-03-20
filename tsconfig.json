@@ -34,10 +34,7 @@
     },
     {
       "path": "./packages/webhooks"
-    },
-    // {
-    //   "path": "./packages/wardenprotocol-client"
-    // }
+    }
   ],
   "compileOnSave": true
 }
