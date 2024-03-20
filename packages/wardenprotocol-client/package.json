@@ -1,0 +1,16 @@
+{
+  "name": "@warden/wardenprotocol-client",
+  "version": "1.0.0",
+  "author": "",
+  "license": "ISC",
+  "private": true,
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "NODE_OPTIONS='--max-old-space-size=16384' tsc --build"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}

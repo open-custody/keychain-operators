@@ -12,6 +12,10 @@
     "experimentalDecorators": true,
     "outDir": "dist"
   },
+  "exclude": [
+    "dist",
+    "external/**"
+  ],
   "references": [
     {
       "path": "./packages/blockchain-library"
@@ -30,7 +34,10 @@
     },
     {
       "path": "./packages/webhooks"
-    }
+    },
+    // {
+    //   "path": "./packages/wardenprotocol-client"
+    // }
   ],
   "compileOnSave": true
 }
