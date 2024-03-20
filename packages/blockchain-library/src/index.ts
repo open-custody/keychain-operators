@@ -20,9 +20,11 @@ export class WardenService {
   }
 
   async *pollNewKeys(): AsyncGenerator<INewKeyRequest> {
-    const query = this.client().WardenWarden.query;
+    const query = this.client().WardenWardenV1Beta2.query;
 
     while (this.configuration.pollingIntervalMsec >= 0) {
+      await delay(this.configuration.pollingIntervalMsec);
+
       for (const key of this.keys) {
         const keyResponse = await query.queryKeyRequestById({ id: key }).catch(console.error);
 
@@ -33,16 +35,15 @@ export class WardenService {
 
       const pendingKeys = await query
         .queryKeyRequests({
-          keychain_id: '2',
+          keychain_id: this.configuration.keychainId,
           status: 'KEY_REQUEST_STATUS_PENDING',
-          'pagination.count_total': true,
           'pagination.limit': '100',
         })
         .catch(console.error);
 
       if (!pendingKeys || !pendingKeys.data.key_requests) continue;
 
-      for (let i = 0; i < +pendingKeys.data.pagination.total; i++) {
+      for (let i = 0; i < +pendingKeys.data.key_requests.length; i++) {
         const key = pendingKeys.data.key_requests[i];
 
         if (this.keys.has(key.id)) continue;
@@ -56,19 +57,6 @@ export class WardenService {
           creator: key.creator,
         };
       }
-
-      await delay(this.configuration.pollingIntervalMsec);
     }
   }
 }
-
-const service = new WardenService({
-  apiURL: 'http://127.0.0.1:1317',
-  rpcURL: 'http://127.0.0.1:26657',
-  prefix: 'warden',
-  pollingIntervalMsec: 5000,
-});
-
-(async () => {
-  for await (const i of service.pollNewKeys()) console.log(i);
-})();

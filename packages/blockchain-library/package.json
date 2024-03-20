@@ -12,8 +12,6 @@
     "build": "tsc --build"
   },
   "dependencies": {
-    "@cosmjs/proto-signing": "^0.32.3",
-    "@cosmjs/stargate": "^0.32.3",
     "@warden/wardenprotocol-client": "1.0.0"
   },
   "devDependencies": {

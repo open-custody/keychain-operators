@@ -1,8 +1,6 @@
 #!/bin/sh
 set -x
 
-pwd
-
 (cd ./external/wardenprotocol && make build-wardend)
-(cd ./external/wardenprotocol/ts-client && yarn install)
+(cd ./external/wardenprotocol/ts-client && npm install)
 yarn workspace @warden/wardenprotocol-client build
