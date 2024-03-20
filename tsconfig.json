@@ -12,6 +12,10 @@
     "experimentalDecorators": true,
     "outDir": "dist"
   },
+  "exclude": [
+    "dist",
+    "external/**"
+  ],
   "references": [
     {
       "path": "./packages/blockchain-library"
