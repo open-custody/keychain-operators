@@ -26,7 +26,7 @@ export class WardenService {
     });
   }
 
-  async *pollNewKeys(): AsyncGenerator<INewKeyRequest> {
+  async *pollPendingKeyRequests(): AsyncGenerator<INewKeyRequest> {
     const query = this.client().query;
 
     while (this.configuration.pollingIntervalMsec >= 0) {
@@ -65,7 +65,7 @@ export class WardenService {
     }
   }
 
-  async fulfilNewKey(requestId: number, publicKey: string): Promise<string> {
+  async fulfilKeyRequest(requestId: number, publicKey: string): Promise<string> {
     const signer = await this.getSigner();
     const account = await signer.getAccounts();
 
@@ -83,7 +83,7 @@ export class WardenService {
     return tx.transactionHash;
   }
 
-  async rejectNewKey(requestId: number, reason: string): Promise<string> {
+  async rejectKeyRequest(requestId: number, reason: string): Promise<string> {
     const signer = await this.getSigner();
     const account = await signer.getAccounts();
 
