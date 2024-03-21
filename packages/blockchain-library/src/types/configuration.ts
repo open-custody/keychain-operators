@@ -4,4 +4,6 @@ export interface IWardenConfiguration {
   prefix: string;
   pollingIntervalMsec: number;
   keychainId: string;
+  signerMnemonic: string;
+  chainPrefix: string;
 }
