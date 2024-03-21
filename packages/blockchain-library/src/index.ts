@@ -6,6 +6,7 @@ import { promisify } from 'util';
 import { IWardenConfiguration } from './types/configuration';
 import { KeyRequest } from './types/keyRequest';
 import { INewKeyRequest } from './types/newKeyRequest';
+import { ITransactionState } from './types/transactionState';
 
 const delay = promisify((ms: number, res: () => void) => setTimeout(res, ms));
 
@@ -65,7 +66,7 @@ export class WardenService {
     }
   }
 
-  async fulfilKeyRequest(requestId: number, publicKey: string): Promise<string> {
+  async fulfilKeyRequest(requestId: number, publicKey: string): Promise<ITransactionState> {
     const signer = await this.getSigner();
     const accounts = await signer.getAccounts();
 
@@ -78,12 +79,10 @@ export class WardenService {
       },
     });
 
-    if (tx.code !== 0) throw new Error(`tx failed: ${JSON.stringify(tx)}`);
-
-    return tx.transactionHash;
+    return { hash: tx.transactionHash, errorCode: tx.code };
   }
 
-  async rejectKeyRequest(requestId: number, reason: string): Promise<string> {
+  async rejectKeyRequest(requestId: number, reason: string): Promise<ITransactionState> {
     const signer = await this.getSigner();
     const accounts = await signer.getAccounts();
 
@@ -96,9 +95,7 @@ export class WardenService {
       },
     });
 
-    if (tx.code !== 0) throw new Error(`tx failed: ${JSON.stringify(tx)}`);
-
-    return tx.transactionHash;
+    return { hash: tx.transactionHash, errorCode: tx.code };
   }
 
   async getKeyRequest(requestId: string): Promise<void | KeyRequest> {
