@@ -1,18 +1,18 @@
 {
-  "name": "@warden/blockchain-library",
+  "name": "@warden/wardenprotocol-client",
   "version": "1.0.0",
   "author": "",
   "license": "ISC",
   "private": true,
-  "main": "src/index.ts",
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "tsc --build"
+    "build": "NODE_OPTIONS='--max-old-space-size=16384' tsc --build"
   },
   "dependencies": {
-    "@warden/wardenprotocol-client": "1.0.0"
+    "@cosmjs/proto-signing": "^0.32.3",
+    "@cosmjs/stargate": "^0.32.3"
   },
   "devDependencies": {
     "typescript": "^5.3.3"
