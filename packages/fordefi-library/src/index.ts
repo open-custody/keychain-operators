@@ -21,4 +21,14 @@ export class FordefiSerice {
     const response = await axios.post(url, createVaultParams, { headers });
     return response.data;
   }
+
+  async getVault(id: string): Promise<Vault> {
+    const url = new URL(`vaults/${id}`, this.configuration.fordefiAPIEndpoint).toString();
+    const headers = {
+      Accept: 'application/json',
+      Authorization: `Bearer ${this.configuration.accessToken}`,
+    };
+    const response = await axios.get(url, { headers });
+    return response.data;
+  }
 }
