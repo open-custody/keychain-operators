@@ -67,11 +67,11 @@ export class WardenService {
 
   async fulfilKeyRequest(requestId: number, publicKey: string): Promise<string> {
     const signer = await this.getSigner();
-    const account = await signer.getAccounts();
+    const accounts = await signer.getAccounts();
 
     const tx = await this.client(signer).tx.sendMsgUpdateKeyRequest({
       value: {
-        creator: account[0].address,
+        creator: accounts[0].address,
         requestId: requestId,
         key: { publicKey: Buffer.from(publicKey, 'utf8') },
         status: KeyRequestStatus.KEY_REQUEST_STATUS_FULFILLED,
@@ -85,11 +85,11 @@ export class WardenService {
 
   async rejectKeyRequest(requestId: number, reason: string): Promise<string> {
     const signer = await this.getSigner();
-    const account = await signer.getAccounts();
+    const accounts = await signer.getAccounts();
 
     const tx = await this.client(signer).tx.sendMsgUpdateKeyRequest({
       value: {
-        creator: account[0].address,
+        creator: accounts[0].address,
         requestId: requestId,
         status: KeyRequestStatus.KEY_REQUEST_STATUS_REJECTED,
         rejectReason: reason,
