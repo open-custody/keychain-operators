@@ -25,7 +25,6 @@ export class FordefiSerice {
   async getVault(id: string): Promise<Vault> {
     const url = new URL(`vaults/${id}`, this.configuration.fordefiAPIEndpoint).toString();
     const headers = {
-      'Content-type': 'application/json',
       Accept: 'application/json',
       Authorization: `Bearer ${this.configuration.accessToken}`,
     };
