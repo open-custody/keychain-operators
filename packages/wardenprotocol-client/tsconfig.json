@@ -1,0 +1,20 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "removeComments": true,
+    "allowSyntheticDefaultImports": true,
+    "noImplicitAny": false,
+    "strictBindCallApply": false,
+    "noFallthroughCasesInSwitch": false,
+    "outDir": "dist"
+  },
+  "include": [
+    "../../external/wardenprotocol/ts-client/**/*.ts"
+  ],
+  "exclude": [
+    "../../external/wardenprotocol/ts-client/lib/**",
+    "dist",
+    "node_modules"
+  ],
+  "compileOnSave": true
+}
