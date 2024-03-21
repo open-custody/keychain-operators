@@ -1,36 +1,41 @@
+import { DirectSecp256k1HdWallet, OfflineSigner } from '@cosmjs/proto-signing';
 import { Client } from '@warden/wardenprotocol-client/dist';
+import { KeyRequestStatus } from '@warden/wardenprotocol-client/dist/warden.warden.v1beta2/types/warden/warden/v1beta2/key';
 import { promisify } from 'util';
 
 import { IWardenConfiguration } from './types/configuration';
+import { KeyRequest } from './types/keyRequest';
 import { INewKeyRequest } from './types/newKeyRequest';
 
 const delay = promisify((ms: number, res: () => void) => setTimeout(res, ms));
 
 export class WardenService {
-  configuration: IWardenConfiguration;
   keys: Set<string>;
 
-  constructor(configuration: IWardenConfiguration) {
+  constructor(private configuration: IWardenConfiguration) {
     this.keys = new Set();
-    this.configuration = configuration;
   }
 
-  client() {
-    return new Client(this.configuration);
+  client(signer: OfflineSigner = undefined) {
+    return new Client(this.configuration, signer).WardenWardenV1Beta2;
+  }
+
+  async getSigner(): Promise<OfflineSigner> {
+    return await DirectSecp256k1HdWallet.fromMnemonic(this.configuration.signerMnemonic, {
+      prefix: this.configuration.chainPrefix,
+    });
   }
 
   async *pollNewKeys(): AsyncGenerator<INewKeyRequest> {
-    const query = this.client().WardenWardenV1Beta2.query;
+    const query = this.client().query;
 
     while (this.configuration.pollingIntervalMsec >= 0) {
       await delay(this.configuration.pollingIntervalMsec);
 
       for (const key of this.keys) {
-        const keyResponse = await query.queryKeyRequestById({ id: key }).catch(console.error);
+        const keyResponse = await this.getKeyRequest(key).catch(console.error);
 
-        if (!keyResponse || !keyResponse.data.key_request) continue;
-
-        if (keyResponse.data.key_request.status !== 'KEY_REQUEST_STATUS_PENDING') this.keys.delete(key);
+        if (!!keyResponse && keyResponse.status !== 'KEY_REQUEST_STATUS_PENDING') this.keys.delete(key);
       }
 
       const pendingKeys = await query
@@ -58,5 +63,48 @@ export class WardenService {
         };
       }
     }
+  }
+
+  async fulfilNewKey(requestId: number, publicKey: string): Promise<string> {
+    const signer = await this.getSigner();
+    const account = await signer.getAccounts();
+
+    const tx = await this.client(signer).tx.sendMsgUpdateKeyRequest({
+      value: {
+        creator: account[0].address,
+        requestId: requestId,
+        key: { publicKey: Buffer.from(publicKey, 'utf8') },
+        status: KeyRequestStatus.KEY_REQUEST_STATUS_FULFILLED,
+      },
+    });
+
+    if (tx.code !== 0) throw new Error(`tx failed: ${JSON.stringify(tx)}`);
+
+    return tx.transactionHash;
+  }
+
+  async rejectNewKey(requestId: number, reason: string): Promise<string> {
+    const signer = await this.getSigner();
+    const account = await signer.getAccounts();
+
+    const tx = await this.client(signer).tx.sendMsgUpdateKeyRequest({
+      value: {
+        creator: account[0].address,
+        requestId: requestId,
+        status: KeyRequestStatus.KEY_REQUEST_STATUS_REJECTED,
+        rejectReason: reason,
+      },
+    });
+
+    if (tx.code !== 0) throw new Error(`tx failed: ${JSON.stringify(tx)}`);
+
+    return tx.transactionHash;
+  }
+
+  async getKeyRequest(requestId: string): Promise<void | KeyRequest> {
+    return await this.client()
+      .query.queryKeyRequestById({ id: requestId })
+      .then((x) => (x?.data?.key_request ? { status: x.data.key_request.status } : null))
+      .catch(console.error);
   }
 }
