@@ -1,7 +1,7 @@
+import { User } from '../user';
 import { ChainsAddress } from './chainAddress';
 import { EnrichedChain } from './enrichedChain';
 import { Keyset } from './keyset';
-import { User } from './user';
 import { VaultDerivationInfo } from './vault.derivationInfo';
 import { VaultGroup } from './vault.group';
 import { VaultType } from './vault.type';
