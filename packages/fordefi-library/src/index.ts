@@ -14,6 +14,12 @@ export class FordefiSerice {
     this.configuration = configuration;
   }
 
+  decompressPublicKey(compressedKey: string, format: crypto.BinaryToTextEncoding): Uint8Array {
+    const ecdh = crypto.ECDH.convertKey(compressedKey, 'secp256k1', format, 'hex', 'uncompressed');
+
+    return Uint8Array.from(Buffer.from(ecdh as string, 'hex'));
+  }
+
   async createVault(createVaultParams: CreateVaultParams): Promise<Vault> {
     const url = new URL('vaults', this.configuration.fordefiAPIEndpoint).toString();
     const headers = {
@@ -22,7 +28,7 @@ export class FordefiSerice {
       Authorization: `Bearer ${this.configuration.accessToken}`,
     };
     const response = await axios.post(url, createVaultParams, { headers });
-    return response.data;
+    return { ...response.data, public_key: this.decompressPublicKey(response.data.public_key_compressed, 'base64') };
   }
 
   async getVault(id: string): Promise<Vault> {
@@ -32,17 +38,19 @@ export class FordefiSerice {
       Authorization: `Bearer ${this.configuration.accessToken}`,
     };
     const response = await axios.get(url, { headers });
-    return response.data;
+    return { ...response.data, public_key: this.decompressPublicKey(response.data.public_key_compressed, 'base64') };
   }
 
-  async createBlackBoxSignatureRequest(createParams: CreateBlackBoxSignatureRequestParams): Promise<BlackBoxSignature> {
+  async createBlackBoxSignatureRequest(
+    createParams: CreateBlackBoxSignatureRequestParams,
+    idempontenceId = null,
+  ): Promise<BlackBoxSignature> {
     const url = new URL('transactions', this.configuration.fordefiAPIEndpoint);
 
     const path = url.pathname;
     const timestamp = new Date().getTime();
     const requestBody = JSON.stringify(createParams);
     const payload = `${path}|${timestamp}|${requestBody}`;
-
     const privateKey = crypto.createPrivateKey(this.configuration.apiClientPrivateKey);
     const sign = crypto.createSign('SHA256').update(payload, 'utf8').end();
     const signature = sign.sign(privateKey, 'base64');
@@ -53,7 +61,7 @@ export class FordefiSerice {
       Authorization: `Bearer ${this.configuration.accessToken}`,
       'x-signature': signature,
       'x-timestamp': timestamp,
-      'x-idempotence-id': createParams.idempontenceId,
+      'x-idempotence-id': idempontenceId,
     };
 
     const response = await axios.post(url.toString(), createParams, { headers });

@@ -11,6 +11,4 @@ export interface CreateBlackBoxSignatureRequestParams {
   type: 'black_box_signature';
   /** Data to sign */
   details: BlackBoxSignaturePayload;
-  /** Optional idempontence id, should be in uuid-v4 format */
-  idempontenceId?: string;
 }

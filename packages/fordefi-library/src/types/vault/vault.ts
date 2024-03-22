@@ -23,6 +23,8 @@ export interface VaultBase {
   derivation_path: string;
   /** The compressed public key of the vault. As defined in the SEC1 standard: https://www.secg.org/SEC1-Ver-1.0.pdf. */
   public_key_compressed: string;
+  /** Decompressed public key */
+  public_key: Uint8Array;
   /** The derivation info of the vault. */
   derivation_info: VaultDerivationInfo;
   /** Represents a reference to a keyset in the Fordefi platform */
