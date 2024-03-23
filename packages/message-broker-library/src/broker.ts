@@ -1,37 +1,71 @@
-import { Connection, connect } from 'amqplib';
+import { Channel, Connection, connect } from 'amqplib';
+import { promisify } from 'util';
 
 import { IMessageBrokerConfiguration } from './types/configuration';
 
+const delay = promisify((ms: number, res: () => void) => setTimeout(res, ms));
+
 export abstract class MessageBroker {
+  channel: Channel;
   connection: Connection;
+  configuration: IMessageBrokerConfiguration;
 
-  constructor(private configuration: IMessageBrokerConfiguration) {}
+  constructor(configuration: IMessageBrokerConfiguration) {
+    this.configuration = configuration;
+  }
 
-  async connect(): Promise<Connection> {
-    this.connection = await connect(this.configuration.connectionString)
-      .then((connection) => {
-        connection.once('error', function (error) {
+  async initConnection(): Promise<void> {
+    await connect(this.configuration.connectionString)
+      .then(async (connection) => {
+        connection.once('error', async (error) => {
           console.error(error);
-          setTimeout(connect, 5_000);
+
+          connection.close().catch(console.error);
         });
 
-        connection.once('close', function (error) {
+        connection.once('close', async (error) => {
           console.error(error);
-          setTimeout(connect, 5_000);
+
+          await delay(this.configuration.reconnectMsec);
+          await this.initConnection();
         });
 
-        return connection;
+        this.connection = connection;
       })
       .catch(async (error) => {
         console.error(error);
 
-        setTimeout(connect, 5_000);
+        await delay(this.configuration.reconnectMsec);
+        await this.initConnection();
       });
+  }
 
-    const channel = await this.connection.createChannel();
+  async initChannel(): Promise<void> {
+    await this.connection
+      .createChannel()
+      .then(async (channel) => {
+        channel.once('error', async (error) => {
+          console.error(error);
 
-    channel.recover();
+          await channel.close().catch(console.error);
+        });
 
-    return this.connection;
+        channel.once('close', async (error) => {
+          console.error(error);
+
+          await delay(this.configuration.reconnectMsec);
+          await this.initChannel();
+        });
+
+        this.channel = channel;
+
+        await channel.assertQueue(this.configuration.queue, { durable: true });
+      })
+      .catch(async (error) => {
+        console.error(error);
+
+        await delay(this.configuration.reconnectMsec);
+        await this.initChannel();
+      });
   }
 }
