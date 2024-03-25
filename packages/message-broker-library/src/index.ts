@@ -1,3 +1,4 @@
-export function bolerplate(): string {
-  return 'hello!';
-}
+import { MessageBrokerConsumer } from './consumer';
+import { MessageBrokerProducer } from './producer';
+
+export { MessageBrokerProducer, MessageBrokerConsumer };

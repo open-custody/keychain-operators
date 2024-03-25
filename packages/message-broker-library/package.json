@@ -11,6 +11,10 @@
   "scripts": {
     "build": "tsc --build"
   },
+  "dependencies": {
+    "@types/amqplib": "^0.10.5",
+    "amqplib": "^0.10.3"
+  },
   "devDependencies": {
     "typescript": "^5.3.3"
   }
