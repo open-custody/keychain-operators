@@ -9,12 +9,13 @@ import { INewKeyRequest } from './types/newKeyRequest';
 import { ITransactionState } from './types/transactionState';
 
 const delay = promisify((ms: number, res: () => void) => setTimeout(res, ms));
+const keyRetentionMsec = 60_000;
 
 export class WardenService {
-  keys: Set<string>;
+  keys: Map<string, number>;
 
   constructor(private configuration: IWardenConfiguration) {
-    this.keys = new Set();
+    this.keys = new Map<string, number>();
   }
 
   client(signer: OfflineSigner = undefined) {
@@ -23,25 +24,28 @@ export class WardenService {
 
   async getSigner(): Promise<OfflineSigner> {
     return await DirectSecp256k1HdWallet.fromMnemonic(this.configuration.signerMnemonic, {
-      prefix: this.configuration.chainPrefix,
+      prefix: this.configuration.prefix,
     });
   }
 
-  async *pollPendingKeyRequests(): AsyncGenerator<INewKeyRequest> {
+  async *pollPendingKeyRequests(keychainId: string): AsyncGenerator<INewKeyRequest> {
     const query = this.client().query;
 
     while (this.configuration.pollingIntervalMsec >= 0) {
       await delay(this.configuration.pollingIntervalMsec);
 
-      for (const key of this.keys) {
+      for (const [key, retiredAt] of this.keys) {
+        const nowMsec = new Date().getTime();
         const keyResponse = await this.getKeyRequest(key).catch(console.error);
 
-        if (!!keyResponse && keyResponse.status !== 'KEY_REQUEST_STATUS_PENDING') this.keys.delete(key);
+        if ((!!keyResponse && keyResponse.status !== 'KEY_REQUEST_STATUS_PENDING') || retiredAt < nowMsec) {
+          this.keys.delete(key);
+        }
       }
 
       const pendingKeys = await query
         .queryKeyRequests({
-          keychain_id: this.configuration.keychainId,
+          keychain_id: keychainId,
           status: 'KEY_REQUEST_STATUS_PENDING',
           'pagination.limit': '100',
         })
@@ -54,7 +58,7 @@ export class WardenService {
 
         if (this.keys.has(key.id)) continue;
 
-        this.keys.add(key.id);
+        this.keys.set(key.id, new Date().getTime() + keyRetentionMsec);
 
         yield {
           id: key.id,
@@ -105,3 +109,5 @@ export class WardenService {
       .catch(console.error);
   }
 }
+
+export { INewKeyRequest } from './types/newKeyRequest';
