@@ -8,7 +8,7 @@ import { AppService } from '../services/app.service';
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @Post('/api/signature')
+  @Post('/webhook/signature')
   @UseGuards(SignatureGuard)
   handleSignature(@Body() _fordefiWebhookEvent: FordefiWebhookEvent) {
     return this.appService.getHello();

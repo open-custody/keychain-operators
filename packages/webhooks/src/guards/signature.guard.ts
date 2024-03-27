@@ -8,7 +8,7 @@ export class SignatureGuard implements CanActivate {
   constructor(private configService: ConfigService) {}
 
   canActivate(context: ExecutionContext): boolean | Promise<boolean> {
-    const fordefiPublicKey = this.configService.getOrThrow('FORDEFI_PUBLIC_KEY');
+    const fordefiPublicKey = this.configService.getOrThrow('FORDEFI_PUBLIC_KEY').replace(/\\n/g, '\n');
 
     const request: RawBodyRequest<Request> = context.switchToHttp().getRequest();
     const signature = request.get('X-Signature');
