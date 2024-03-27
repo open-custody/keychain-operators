@@ -10,7 +10,7 @@ export class AppController {
 
   @Post('/api/signature')
   @UseGuards(SignatureGuard)
-  handleSignature(@Body() fordefiWebhookEvent: FordefiWebhookEvent) {
+  handleSignature(@Body() _fordefiWebhookEvent: FordefiWebhookEvent) {
     return this.appService.getHello();
   }
 }
