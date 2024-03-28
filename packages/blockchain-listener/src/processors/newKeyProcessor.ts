@@ -14,6 +14,8 @@ export class NewKeyProcessor extends Processor<INewKeyRequest> {
 
   async handle(data: INewKeyRequest): Promise<boolean> {
     try {
+      console.log(`New Key request: ${data.id}`);
+
       return this.producer.publish<INewKeyRequestMessage>({
         provider: this.provider,
         creator: data.creator,

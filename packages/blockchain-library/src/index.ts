@@ -70,7 +70,7 @@ export class WardenService {
     }
   }
 
-  async fulfilKeyRequest(requestId: number, publicKey: string): Promise<ITransactionState> {
+  async fulfilKeyRequest(requestId: number, publicKey: Buffer): Promise<ITransactionState> {
     const signer = await this.getSigner();
     const accounts = await signer.getAccounts();
 
@@ -78,7 +78,7 @@ export class WardenService {
       value: {
         creator: accounts[0].address,
         requestId: requestId,
-        key: { publicKey: Buffer.from(publicKey, 'utf8') },
+        key: { publicKey: publicKey },
         status: KeyRequestStatus.KEY_REQUEST_STATUS_FULFILLED,
       },
     });
