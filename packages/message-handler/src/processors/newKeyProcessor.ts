@@ -7,6 +7,7 @@ import { Processor } from './processor';
 export class NewKeyProcessor extends Processor<INewKeyRequestMessage> {
   constructor(
     private keychainHandlers: Map<KeyProvider, IKeychainHandler>,
+    private retryAttempts: number,
     warden: WardenService,
     consumer: MessageBrokerConsumer,
     prefetch: number,
@@ -15,28 +16,34 @@ export class NewKeyProcessor extends Processor<INewKeyRequestMessage> {
   }
 
   async handle(data: INewKeyRequestMessage): Promise<boolean> {
-    try {
-      const handler = this.keychainHandlers.get(data.provider);
+    let attempt = this.retryAttempts;
 
-      if (!handler) {
-        return await this.reject(+data.requestId, `Key provider is not supported: ${data.provider}`);
+    while (attempt >= 0) {
+      try {
+        if (attempt === 0) {
+          return await this.reject(+data.requestId, `Failed to create new key (${this.retryAttempts} attempts)`);
+        }
+
+        const handler = this.keychainHandlers.get(data.provider);
+
+        if (!handler) {
+          return await this.reject(+data.requestId, `Key provider is not supported: ${data.provider}`);
+        }
+
+        const request = await this.warden.getKeyRequest(data.requestId);
+
+        if (request && request.status !== 'KEY_REQUEST_STATUS_PENDING') {
+          return true;
+        }
+
+        const publicKey = await handler.createKey(data);
+
+        return await this.fulfill(+data.requestId, publicKey);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        attempt--;
       }
-
-      const request = await this.warden.getKeyRequest(data.requestId);
-
-      if (request && request.status !== 'KEY_REQUEST_STATUS_PENDING') {
-        return true;
-      }
-
-      const publicKey = await handler.createKey(data);
-
-      return await this.fulfill(+data.requestId, publicKey);
-
-      // TODO: reject on 3rd attempt
-    } catch (error) {
-      console.error(error);
-
-      return false;
     }
   }
 

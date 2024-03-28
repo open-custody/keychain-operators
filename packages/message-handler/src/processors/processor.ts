@@ -19,7 +19,7 @@ export abstract class Processor<T> {
     await this.consumer.consume<T>({ prefetch: this.prefetch }, async (message) => await this.handle(message));
 
     while (true) {
-      await delay(1000);
+      await delay(10_000);
     }
   }
 

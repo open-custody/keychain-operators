@@ -8,8 +8,6 @@ import { IKeychainHandler } from './keychains/keychainHandler';
 import { NewKeyProcessor } from './processors/newKeyProcessor';
 
 export async function main(): Promise<void> {
-  // TODO: add retry attempts and recover nack messages
-
   const warden = new WardenService({
     apiURL: process.env.WARDEN_API_URL,
     pollingIntervalMsec: +process.env.WARDEN_POLLING_INTERVAL_MSEC,
@@ -37,6 +35,7 @@ export async function main(): Promise<void> {
 
   const newFordefiKeyRequestProcess = new NewKeyProcessor(
     handlers,
+    +process.env.BROKER_CONSUMER_RETRY_ATTEMPTS,
     warden,
     newKeyRequestConsumer,
     +process.env.BROKER_QUEUE_PREFETCH,
