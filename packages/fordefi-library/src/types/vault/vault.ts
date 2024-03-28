@@ -24,7 +24,7 @@ export interface VaultBase {
   /** The compressed public key of the vault. As defined in the SEC1 standard: https://www.secg.org/SEC1-Ver-1.0.pdf. */
   public_key_compressed: string;
   /** Decompressed public key */
-  public_key: Uint8Array;
+  public_key: Buffer;
   /** The derivation info of the vault. */
   derivation_info: VaultDerivationInfo;
   /** Represents a reference to a keyset in the Fordefi platform */
@@ -80,6 +80,13 @@ export interface BlackboxVault extends VaultBase {
     /** The stark public key, represented in hex format. - only if key_type=ecdsa_stark  */
     stark_key?: string;
   };
+}
+
+export interface Vaults {
+  total: number;
+  page: number;
+  size: number;
+  vaults: Vault[];
 }
 
 export type Vault = EvmVault | CosmosVault | SolanaVault | UtxoVault | BlackboxVault;

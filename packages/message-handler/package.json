@@ -11,6 +11,12 @@
   "scripts": {
     "build": "tsc --build"
   },
+  "dependencies": {
+    "@warden/blockchain-library": "1.0.0",
+    "@warden/message-broker-library": "1.0.0",
+    "@warden/fordefi-library": "1.0.0",
+    "dotenv": "^16.4.5"
+  },
   "devDependencies": {
     "typescript": "^5.3.3"
   }

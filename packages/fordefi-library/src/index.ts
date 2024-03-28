@@ -4,20 +4,19 @@ import * as crypto from 'crypto';
 import { CreateBlackBoxSignatureRequestParams } from './types/blackbox-signature/blackBox.createSignatureParams';
 import { BlackBoxSignature } from './types/blackbox-signature/blackBox.signature';
 import { IFordefiConfiguration } from './types/vault/configuration';
-import { Vault } from './types/vault/vault';
+import { Vault, Vaults } from './types/vault/vault';
 import { CreateVaultParams } from './types/vault/vault.createParams';
 
-export class FordefiSerice {
+export class FordefiService {
   configuration: IFordefiConfiguration;
 
   constructor(configuration: IFordefiConfiguration) {
     this.configuration = configuration;
   }
 
-  decompressPublicKey(compressedKey: string, format: crypto.BinaryToTextEncoding): Uint8Array {
+  decompressPublicKey(compressedKey: string, format: crypto.BinaryToTextEncoding): Buffer {
     const ecdh = crypto.ECDH.convertKey(compressedKey, 'secp256k1', format, 'hex', 'uncompressed');
-
-    return Uint8Array.from(Buffer.from(ecdh as string, 'hex'));
+    return Buffer.from(ecdh as string, 'hex');
   }
 
   async createVault(createVaultParams: CreateVaultParams): Promise<Vault> {
@@ -31,14 +30,19 @@ export class FordefiSerice {
     return { ...response.data, public_key: this.decompressPublicKey(response.data.public_key_compressed, 'base64') };
   }
 
-  async getVault(id: string): Promise<Vault> {
-    const url = new URL(`vaults/${id}`, this.configuration.fordefiAPIEndpoint).toString();
+  async getVault(search: string): Promise<Vault> {
+    const url = new URL(`vaults?page=1&size=1&search=${search}`, this.configuration.fordefiAPIEndpoint).toString();
     const headers = {
       Accept: 'application/json',
       Authorization: `Bearer ${this.configuration.accessToken}`,
     };
-    const response = await axios.get(url, { headers });
-    return { ...response.data, public_key: this.decompressPublicKey(response.data.public_key_compressed, 'base64') };
+    const response = await axios.get<Vaults>(url, { headers });
+
+    if (response.data.vaults.length === 0) return null;
+
+    const vault = response.data.vaults[0];
+
+    return { ...vault, public_key: this.decompressPublicKey(vault.public_key_compressed, 'base64') };
   }
 
   async createBlackBoxSignatureRequest(
