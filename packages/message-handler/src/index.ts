@@ -24,7 +24,7 @@ export async function main(): Promise<void> {
 
   const newKeyRequestConsumer = new MessageBrokerConsumer({
     connectionString: process.env.BROKER_CONNECTION_STRING,
-    queue: process.env.BROKER_QUEUE_NAME,
+    queue: process.env.BROKER_NEW_KEY_QUEUE_NAME,
     reconnectMsec: +process.env.BROKER_RECONNECT_MSEC,
   });
 
@@ -35,10 +35,10 @@ export async function main(): Promise<void> {
 
   const newFordefiKeyRequestProcess = new NewKeyProcessor(
     handlers,
-    +process.env.BROKER_CONSUMER_RETRY_ATTEMPTS,
     warden,
     newKeyRequestConsumer,
     +process.env.BROKER_QUEUE_PREFETCH,
+    +process.env.BROKER_CONSUMER_RETRY_ATTEMPTS,
   ).start();
 
   await Promise.all([newFordefiKeyRequestProcess]);

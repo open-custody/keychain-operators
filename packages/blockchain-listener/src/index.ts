@@ -15,7 +15,7 @@ export async function main(): Promise<void> {
 
   const newKeyRequestProducer = new MessageBrokerProducer({
     connectionString: process.env.BROKER_CONNECTION_STRING,
-    queue: process.env.BROKER_QUEUE_NAME,
+    queue: process.env.BROKER_NEW_KEY_QUEUE_NAME,
     reconnectMsec: +process.env.BROKER_RECONNECT_MSEC,
   });
 
