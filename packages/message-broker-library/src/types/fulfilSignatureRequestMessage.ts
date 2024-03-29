@@ -1,8 +1,7 @@
-import { FulfilmentStatus } from './fulfilmentStatus';
-
-export interface IFulfilSignatureRequestMessage {
+export interface ISignatureStatusMessage {
   creator: string;
   requestId: number;
-  status: FulfilmentStatus;
+  success: boolean;
+  reason: string;
   keyProviderRequestId?: string;
 }
