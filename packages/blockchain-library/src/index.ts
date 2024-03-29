@@ -6,6 +6,8 @@ import { promisify } from 'util';
 import { IWardenConfiguration } from './types/configuration';
 import { KeyRequest } from './types/keyRequest';
 import { INewKeyRequest } from './types/newKeyRequest';
+import { INewSignatureRequest } from './types/newSignatureRequest';
+import { SignatureRequest } from './types/signatureRequest';
 import { ITransactionState } from './types/transactionState';
 
 const delay = promisify((ms: number, res: () => void) => setTimeout(res, ms));
@@ -13,9 +15,11 @@ const keyRetentionMsec = 60_000;
 
 export class WardenService {
   keys: Map<string, number>;
+  signatures: Map<string, number>;
 
   constructor(private configuration: IWardenConfiguration) {
     this.keys = new Map<string, number>();
+    this.signatures = new Map<string, number>();
   }
 
   client(signer: OfflineSigner = undefined) {
@@ -70,6 +74,50 @@ export class WardenService {
     }
   }
 
+  async *pollPendingSignatureRequests(keychainId: string): AsyncGenerator<INewSignatureRequest> {
+    const query = this.client().query;
+
+    while (this.configuration.pollingIntervalMsec >= 0) {
+      await delay(this.configuration.pollingIntervalMsec);
+
+      for (const [key, retiredAt] of this.signatures) {
+        const nowMsec = new Date().getTime();
+        const keyResponse = await this.getSignatureRequest(key).catch(console.error);
+
+        if ((!!keyResponse && keyResponse.status !== 'SIGN_REQUEST_STATUS_PENDING') || retiredAt < nowMsec) {
+          this.signatures.delete(key);
+        }
+      }
+
+      const pendingKeys = await query
+        .querySignatureRequests({
+          keychain_id: keychainId,
+          status: 'SIGN_REQUEST_STATUS_PENDING',
+          'pagination.limit': '100',
+        })
+        .catch(console.error);
+
+      if (!pendingKeys || !pendingKeys.data.sign_requests) continue;
+
+      for (let i = 0; i < +pendingKeys.data.sign_requests.length; i++) {
+        const request = pendingKeys.data.sign_requests[i];
+
+        if (this.signatures.has(request.id)) continue;
+
+        this.signatures.set(request.id, new Date().getTime() + keyRetentionMsec);
+
+        yield {
+          id: request.id,
+          keyId: request.key_id,
+          keychainId: keychainId,
+          keyType: request.key_type,
+          creator: request.creator,
+          signingData: request.data_for_signing,
+        };
+      }
+    }
+  }
+
   async fulfilKeyRequest(requestId: number, publicKey: Buffer): Promise<ITransactionState> {
     const signer = await this.getSigner();
     const accounts = await signer.getAccounts();
@@ -108,6 +156,14 @@ export class WardenService {
       .then((x) => (x?.data?.key_request ? { status: x.data.key_request.status } : null))
       .catch(console.error);
   }
+
+  async getSignatureRequest(requestId: string): Promise<void | SignatureRequest> {
+    return await this.client()
+      .query.querySignatureRequestById({ id: requestId })
+      .then((x) => (x?.data?.sign_request ? { status: x.data.sign_request.status } : null))
+      .catch(console.error);
+  }
 }
 
 export { INewKeyRequest } from './types/newKeyRequest';
+export { INewSignatureRequest } from './types/newSignatureRequest';
