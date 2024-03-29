@@ -3,5 +3,13 @@ import { MessageBrokerProducer } from './producer';
 import { ISignatureStatusMessage } from './types/fulfilSignatureRequestMessage';
 import { KeyProvider } from './types/keyProvider';
 import { INewKeyRequestMessage } from './types/newKeyRequestMessage';
+import { INewSignatureRequestMessage } from './types/newSignatureRequestMessage';
 
-export { KeyProvider, ISignatureStatusMessage, INewKeyRequestMessage, MessageBrokerProducer, MessageBrokerConsumer };
+export {
+  KeyProvider,
+  INewKeyRequestMessage,
+  INewSignatureRequestMessage,
+  ISignatureStatusMessage,
+  MessageBrokerProducer,
+  MessageBrokerConsumer,
+};

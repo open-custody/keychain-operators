@@ -7,12 +7,15 @@ export class MessageBrokerConsumer extends MessageBroker {
 
     await this.channel.consume(
       this.configuration.queue,
-      async (message) => {
+      (message) => {
         const obj = JSON.parse(message.content.toString());
 
-        if (!(await handle(obj))) return;
-
-        this.channel.ack(message);
+        handle(obj)
+          .then((handled) => {
+            if (handled) this.channel.ack(message);
+            else this.channel.reject(message, false);
+          })
+          .catch(console.error);
       },
       {
         noAck: false,
