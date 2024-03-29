@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 
 import { AppController } from './controllers/fordefi.controller';
-import { messageBrokerProvider } from './infrastructure/messageBroker.provider';
+import { messageBrokerProducer } from './infrastructure/messageBroker.provider';
 import { MessageProducerService } from './services/messageProducer.service';
 
 @Module({
@@ -12,6 +12,6 @@ import { MessageProducerService } from './services/messageProducer.service';
     }),
   ],
   controllers: [AppController],
-  providers: [messageBrokerProvider, MessageProducerService],
+  providers: [messageBrokerProducer, MessageProducerService],
 })
 export class AppModule {}

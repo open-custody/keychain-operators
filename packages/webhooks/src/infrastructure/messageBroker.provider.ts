@@ -1,8 +1,8 @@
 import { MessageBrokerProducer } from '@warden/message-broker-library';
 
-export const TOKEN = 'MESSAGE_BROKER_PROVIDER';
+export const TOKEN = 'MESSAGE_BROKER_PRODUCER';
 
-export const messageBrokerProvider = {
+export const messageBrokerProducer = {
   provide: TOKEN,
   useFactory: async () => {
     const messageBrokerProducer = new MessageBrokerProducer({
@@ -13,5 +13,7 @@ export const messageBrokerProvider = {
 
     await messageBrokerProducer.initConnection();
     await messageBrokerProducer.initChannel();
+
+    return messageBrokerProducer;
   },
 };
