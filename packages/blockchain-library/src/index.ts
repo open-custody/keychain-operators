@@ -6,7 +6,7 @@ import { promisify } from 'util';
 import { IWardenConfiguration } from './types/configuration';
 import { KeyRequest } from './types/keyRequest';
 import { INewKeyRequest } from './types/newKeyRequest';
-import { INewSignatureRequest } from './types/newKeyRequest copy';
+import { INewSignatureRequest } from './types/newSignatureRequest';
 import { SignatureRequest } from './types/signatureRequest';
 import { ITransactionState } from './types/transactionState';
 
@@ -166,3 +166,4 @@ export class WardenService {
 }
 
 export { INewKeyRequest } from './types/newKeyRequest';
+export { INewSignatureRequest } from './types/newSignatureRequest';

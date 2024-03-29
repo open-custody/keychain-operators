@@ -2,7 +2,7 @@ import { MessageBrokerConsumer } from './consumer';
 import { MessageBrokerProducer } from './producer';
 import { KeyProvider } from './types/keyProvider';
 import { INewKeyRequestMessage } from './types/newKeyRequestMessage';
-import { INewSignatureRequestMessage } from './types/newKeyRequestMessage copy';
+import { INewSignatureRequestMessage } from './types/newSignatureRequestMessage';
 
 export {
   KeyProvider,

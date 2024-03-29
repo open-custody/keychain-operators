@@ -1,4 +1,4 @@
-import { INewSignatureRequest } from '@warden/blockchain-library/dist/types/newKeyRequest copy';
+import { INewSignatureRequest } from '@warden/blockchain-library';
 import { INewSignatureRequestMessage, KeyProvider, MessageBrokerProducer } from '@warden/message-broker-library';
 
 import { Processor } from './processor';
