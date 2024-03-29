@@ -1,6 +1,7 @@
 import { DirectSecp256k1HdWallet, OfflineSigner } from '@cosmjs/proto-signing';
 import { Client } from '@warden/wardenprotocol-client/dist';
 import { KeyRequestStatus } from '@warden/wardenprotocol-client/dist/warden.warden.v1beta2/types/warden/warden/v1beta2/key';
+import { SignRequestStatus } from '@warden/wardenprotocol-client/dist/warden.warden.v1beta2/types/warden/warden/v1beta2/signature';
 import { promisify } from 'util';
 
 import { IWardenConfiguration } from './types/configuration';
@@ -134,6 +135,24 @@ export class WardenService {
     return { hash: tx.transactionHash, errorCode: tx.code };
   }
 
+  async fulfilSignatureRequest(requestId: number, signedData: Buffer): Promise<ITransactionState> {
+    const signer = await this.getSigner();
+    const accounts = await signer.getAccounts();
+
+    const tx = await this.client(signer).tx.sendMsgFulfilSignatureRequest({
+      value: {
+        creator: accounts[0].address,
+        requestId: requestId,
+        status: SignRequestStatus.SIGN_REQUEST_STATUS_FULFILLED,
+        payload: {
+          signedData: signedData,
+        },
+      },
+    });
+
+    return { hash: tx.transactionHash, errorCode: tx.code };
+  }
+
   async rejectKeyRequest(requestId: number, reason: string): Promise<ITransactionState> {
     const signer = await this.getSigner();
     const accounts = await signer.getAccounts();
@@ -143,6 +162,22 @@ export class WardenService {
         creator: accounts[0].address,
         requestId: requestId,
         status: KeyRequestStatus.KEY_REQUEST_STATUS_REJECTED,
+        rejectReason: reason,
+      },
+    });
+
+    return { hash: tx.transactionHash, errorCode: tx.code };
+  }
+
+  async rejectSignatureRequest(requestId: number, reason: string): Promise<ITransactionState> {
+    const signer = await this.getSigner();
+    const accounts = await signer.getAccounts();
+
+    const tx = await this.client(signer).tx.sendMsgFulfilSignatureRequest({
+      value: {
+        creator: accounts[0].address,
+        requestId: requestId,
+        status: SignRequestStatus.SIGN_REQUEST_STATUS_REJECTED,
         rejectReason: reason,
       },
     });
