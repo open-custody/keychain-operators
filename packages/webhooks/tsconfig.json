@@ -8,7 +8,9 @@
     "noFallthroughCasesInSwitch": false,
     "outDir": "dist",
     "rootDir": "src",
-    "composite": true
+    "composite": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
   },
   "include": [
     "src"
