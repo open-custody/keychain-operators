@@ -13,7 +13,9 @@ WARDEN_SIGNER_MNEMONIC=test test test test test test test test test test test te
 WARDEN_FORDEFI_KEYCHAIN_ID=3
 
 BROKER_CONNECTION_STRING=amqps://user:password@host:5671
-BROKER_NEW_KEY_QUEUE_NAME=warden-dev-new-key-request-id BROKER_RECONNECT_MSEC=10000
+BROKER_NEW_KEY_QUEUE_NAME=warden-dev-new-key-request-id
+BROKER_NEW_SIGNATURE_QUEUE_NAME=warden-dev-new-sig-request-id
+BROKER_RECONNECT_MSEC=10000
 BROKER_QUEUE_PREFETCH=1
 ```
 
