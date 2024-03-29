@@ -7,7 +7,7 @@ export const messageBrokerProducer = {
   useFactory: async () => {
     const messageBrokerProducer = new MessageBrokerProducer({
       connectionString: process.env.BROKER_CONNECTION_STRING,
-      queue: process.env.BROKER_QUEUE_NAME,
+      queue: process.env.BROKER_SIGNATURE_STATUS_QUEUE_NAME,
       reconnectMsec: +process.env.BROKER_RECONNECT_MSEC,
     });
 
