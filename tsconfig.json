@@ -34,6 +34,9 @@
     },
     {
       "path": "./packages/webhooks"
+    },
+    {
+      "path": "./packages/utils-library"
     }
   ],
   "compileOnSave": true

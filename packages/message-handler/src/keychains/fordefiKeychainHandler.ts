@@ -1,5 +1,5 @@
 import { FordefiService } from '@warden/fordefi-library';
-import { INewKeyRequestMessage } from '@warden/message-broker-library';
+import { INewKeyRequestMessage, INewSignatureRequestMessage } from '@warden/message-broker-library';
 
 import { IKeychainHandler } from './keychainHandler';
 
@@ -18,5 +18,10 @@ export class FordefiKeychainHandler implements IKeychainHandler {
       }));
 
     return vault.public_key;
+  }
+
+  async sign(data: INewSignatureRequestMessage): Promise<Buffer> {
+    return null;
+    // TODO: implementation
   }
 }

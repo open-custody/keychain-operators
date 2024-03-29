@@ -1,0 +1,20 @@
+{
+  "name": "@warden/utils",
+  "version": "1.0.0",
+  "author": "",
+  "license": "ISC",
+  "private": true,
+  "main": "dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc --build"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "uuid": "^9.0.1"
+  }
+}

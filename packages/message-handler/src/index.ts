@@ -28,8 +28,17 @@ export async function main(): Promise<void> {
     reconnectMsec: +process.env.BROKER_RECONNECT_MSEC,
   });
 
+  const newSignatureRequestConsumer = new MessageBrokerConsumer({
+    connectionString: process.env.BROKER_CONNECTION_STRING,
+    queue: process.env.BROKER_NEW_SIGNATURE_QUEUE_NAME,
+    reconnectMsec: +process.env.BROKER_RECONNECT_MSEC,
+  });
+
   await newKeyRequestConsumer.initConnection();
   await newKeyRequestConsumer.initChannel();
+
+  await newSignatureRequestConsumer.initConnection();
+  await newSignatureRequestConsumer.initChannel();
 
   const handlers = new Map<KeyProvider, IKeychainHandler>([[KeyProvider.Fordefi, new FordefiKeychainHandler(fordefi)]]);
 
@@ -41,7 +50,15 @@ export async function main(): Promise<void> {
     +process.env.BROKER_CONSUMER_RETRY_ATTEMPTS,
   ).start();
 
-  await Promise.all([newFordefiKeyRequestProcess]);
+  const newFordefiSignatureRequestProcess = new NewKeyProcessor(
+    handlers,
+    warden,
+    newSignatureRequestConsumer,
+    +process.env.BROKER_QUEUE_PREFETCH,
+    +process.env.BROKER_CONSUMER_RETRY_ATTEMPTS,
+  ).start();
+
+  await Promise.all([newFordefiKeyRequestProcess, newFordefiSignatureRequestProcess]);
 }
 
 main()
