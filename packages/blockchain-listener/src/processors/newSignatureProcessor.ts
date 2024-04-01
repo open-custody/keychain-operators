@@ -19,7 +19,7 @@ export class NewSignatureProcessor extends Processor<INewSignatureRequest> {
       return this.producer.publish<INewSignatureRequestMessage>({
         provider: this.provider,
         creator: data.creator,
-        keyId: data.keyId,
+        publicKey: data.publicKey,
         keychainId: data.keychainId,
         requestId: data.id,
         keyType: data.keyType,

@@ -28,6 +28,7 @@ export async function main(): Promise<void> {
 
   await newKeyRequestProducer.initConnection();
   await newKeyRequestProducer.initChannel();
+
   await newSignatureRequestProducer.initConnection();
   await newSignatureRequestProducer.initChannel();
 

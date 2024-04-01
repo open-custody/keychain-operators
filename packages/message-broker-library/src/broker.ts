@@ -1,9 +1,7 @@
+import { delay } from '@warden/utils';
 import { Channel, Connection, connect } from 'amqplib';
-import { promisify } from 'util';
 
 import { IMessageBrokerConfiguration } from './types/configuration';
-
-const delay = promisify((ms: number, res: () => void) => setTimeout(res, ms));
 
 export abstract class MessageBroker {
   channel: Channel;

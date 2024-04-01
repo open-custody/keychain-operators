@@ -6,6 +6,7 @@ import 'dotenv/config';
 import { FordefiKeychainHandler } from './keychains/fordefiKeychainHandler';
 import { IKeychainHandler } from './keychains/keychainHandler';
 import { NewKeyProcessor } from './processors/newKeyProcessor';
+import { NewSignatureProcessor } from './processors/newSignatureProcessor';
 
 export async function main(): Promise<void> {
   const warden = new WardenService({
@@ -40,7 +41,9 @@ export async function main(): Promise<void> {
   await newSignatureRequestConsumer.initConnection();
   await newSignatureRequestConsumer.initChannel();
 
-  const handlers = new Map<KeyProvider, IKeychainHandler>([[KeyProvider.Fordefi, new FordefiKeychainHandler(fordefi)]]);
+  const handlers = new Map<KeyProvider, IKeychainHandler>([
+    [KeyProvider.Fordefi, new FordefiKeychainHandler(fordefi, process.env.FORDEFI_UUIDV5_NAMESPACE)],
+  ]);
 
   const newFordefiKeyRequestProcess = new NewKeyProcessor(
     handlers,
@@ -50,7 +53,7 @@ export async function main(): Promise<void> {
     +process.env.BROKER_CONSUMER_RETRY_ATTEMPTS,
   ).start();
 
-  const newFordefiSignatureRequestProcess = new NewKeyProcessor(
+  const newFordefiSignatureRequestProcess = new NewSignatureProcessor(
     handlers,
     warden,
     newSignatureRequestConsumer,

@@ -2,6 +2,7 @@ import { WardenService } from '@warden/blockchain-library';
 import { INewSignatureRequestMessage, KeyProvider, MessageBrokerConsumer } from '@warden/message-broker-library';
 
 import { IKeychainHandler } from '../keychains/keychainHandler';
+import { SignatureResultStatus } from '../types/signResult';
 import { Processor } from './processor';
 
 export class NewSignatureProcessor extends Processor<INewSignatureRequestMessage> {
@@ -17,7 +18,7 @@ export class NewSignatureProcessor extends Processor<INewSignatureRequestMessage
 
   async handle(data: INewSignatureRequestMessage, attempts: number): Promise<boolean> {
     if (attempts === 0) {
-      return await this.reject(+data.requestId, `Failed to create a new key`);
+      return await this.reject(+data.requestId, `Failed to sign a message`);
     }
 
     const handler = this.keychainHandlers.get(data.provider);
@@ -32,17 +33,25 @@ export class NewSignatureProcessor extends Processor<INewSignatureRequestMessage
       return true;
     }
 
-    const publicKey = await handler.sign(data);
+    const result = await handler.sign(data);
 
-    return await this.fulfill(+data.requestId, publicKey);
+    if (result.status === SignatureResultStatus.Pending) {
+      return true;
+    }
+
+    if (result.status === SignatureResultStatus.Failed) {
+      return await this.reject(+data.requestId, result.reason);
+    }
+
+    return await this.fulfill(+data.requestId, result.signature);
   }
 
-  async fulfill(requestId: number, signedData: Buffer) {
+  async fulfill(requestId: number, signedData: Buffer): Promise<boolean> {
     const transaction = await this.warden.fulfilSignatureRequest(requestId, signedData);
     return transaction && transaction.hash && transaction.errorCode === 0;
   }
 
-  async reject(requestId: number, reason: string) {
+  async reject(requestId: number, reason: string): Promise<boolean> {
     const transaction = await this.warden.rejectSignatureRequest(requestId, reason);
     return transaction && transaction.hash && transaction.errorCode === 0;
   }

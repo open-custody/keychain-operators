@@ -1,6 +1,4 @@
-import { promisify } from 'util';
-
-const delay = promisify((ms: number, res: () => void) => setTimeout(res, ms));
+import { delay } from '@warden/utils';
 
 export abstract class Processor<T> {
   constructor(private generator: AsyncGenerator<T>) {}
@@ -19,7 +17,7 @@ export abstract class Processor<T> {
         }
       } catch (error) {
         console.error(error);
-        
+
         await delay(5_000);
       }
     }

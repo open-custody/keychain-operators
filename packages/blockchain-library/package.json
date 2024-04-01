@@ -13,7 +13,8 @@
   },
   "dependencies": {
     "@cosmjs/proto-signing": "^0.32.3",
-    "@warden/wardenprotocol-client": "1.0.0"
+    "@warden/wardenprotocol-client": "1.0.0",
+    "@warden/utils": "1.0.0"
   },
   "devDependencies": {
     "typescript": "^5.3.3"
