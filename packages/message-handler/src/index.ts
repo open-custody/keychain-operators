@@ -1,14 +1,16 @@
 import { WardenService } from '@warden/blockchain-library';
 import { FordefiService } from '@warden/fordefi-library';
 import { KeyProvider, MessageBrokerConsumer } from '@warden/message-broker-library';
-import 'dotenv/config';
+import { config } from 'dotenv';
 
 import { FordefiKeychainHandler } from './keychains/fordefiKeychainHandler';
 import { IKeychainHandler } from './keychains/keychainHandler';
 import { NewKeyProcessor } from './processors/newKeyProcessor';
 import { NewSignatureProcessor } from './processors/newSignatureProcessor';
+import { SignatureStatusProcessor } from './processors/signatureStatusProcessor';
 
 export async function main(): Promise<void> {
+  config();
   const warden = new WardenService({
     apiURL: process.env.WARDEN_API_URL,
     pollingIntervalMsec: +process.env.WARDEN_POLLING_INTERVAL_MSEC,
@@ -35,11 +37,20 @@ export async function main(): Promise<void> {
     reconnectMsec: +process.env.BROKER_RECONNECT_MSEC,
   });
 
+  const signatureStatusConsumer = new MessageBrokerConsumer({
+    connectionString: process.env.BROKER_CONNECTION_STRING,
+    queue: process.env.BROKER_SIGNATURE_STATUS_QUEUE_NAME,
+    reconnectMsec: +process.env.BROKER_RECONNECT_MSEC,
+  });
+
   await newKeyRequestConsumer.initConnection();
   await newKeyRequestConsumer.initChannel();
 
   await newSignatureRequestConsumer.initConnection();
   await newSignatureRequestConsumer.initChannel();
+
+  await signatureStatusConsumer.initConnection();
+  await signatureStatusConsumer.initChannel();
 
   const handlers = new Map<KeyProvider, IKeychainHandler>([
     [KeyProvider.Fordefi, new FordefiKeychainHandler(fordefi, process.env.FORDEFI_UUIDV5_NAMESPACE)],
@@ -61,7 +72,15 @@ export async function main(): Promise<void> {
     +process.env.BROKER_CONSUMER_RETRY_ATTEMPTS,
   ).start();
 
-  await Promise.all([newFordefiKeyRequestProcess, newFordefiSignatureRequestProcess]);
+  const newFordefiSignatureStatusProcess = new SignatureStatusProcessor(
+    handlers,
+    warden,
+    signatureStatusConsumer,
+    +process.env.BROKER_QUEUE_PREFETCH,
+    +process.env.BROKER_CONSUMER_RETRY_ATTEMPTS,
+  ).start();
+
+  await Promise.all([newFordefiKeyRequestProcess, newFordefiSignatureRequestProcess, newFordefiSignatureStatusProcess]);
 }
 
 main()
