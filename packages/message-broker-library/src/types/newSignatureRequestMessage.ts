@@ -3,7 +3,7 @@ import { KeyProvider } from './keyProvider';
 export interface INewSignatureRequestMessage {
   provider: KeyProvider;
   requestId: string;
-  keyId: string;
+  publicKey: string;
   keychainId: string;
   creator: string;
   signingData: string;
