@@ -1,8 +1,6 @@
 import { WardenService } from '@warden/blockchain-library';
 import { MessageBrokerConsumer } from '@warden/message-broker-library';
-import { promisify } from 'util';
-
-const delay = promisify((ms: number, res: () => void) => setTimeout(res, ms));
+import { delay } from '@warden/utils';
 
 export abstract class Processor<T> {
   warden: WardenService;
