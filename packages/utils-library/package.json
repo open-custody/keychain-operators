@@ -1,5 +1,5 @@
 {
-  "name": "@warden/message-broker-library",
+  "name": "@warden/utils",
   "version": "1.0.0",
   "author": "",
   "license": "ISC",
@@ -11,12 +11,11 @@
   "scripts": {
     "build": "tsc --build"
   },
-  "dependencies": {
-    "@types/amqplib": "^0.10.5",
-    "@warden/utils": "1.0.0",
-    "amqplib": "^0.10.3"
-  },
   "devDependencies": {
+    "@types/uuid": "^9.0.8",
     "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "uuid": "^9.0.1"
   }
 }
