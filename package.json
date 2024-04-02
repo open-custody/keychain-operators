@@ -9,7 +9,7 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "tsc --build --verbose",
+    "build": "tsc --build --force --verbose",
     "build-warden": "./scripts/build-warden.sh"
   },
   "devDependencies": {
