@@ -1,8 +1,8 @@
 import { DirectSecp256k1HdWallet, OfflineSigner } from '@cosmjs/proto-signing';
+import { delay } from '@warden/utils';
 import { Client } from '@warden/wardenprotocol-client/dist';
 import { KeyRequestStatus } from '@warden/wardenprotocol-client/dist/warden.warden.v1beta2/types/warden/warden/v1beta2/key';
 import { SignRequestStatus } from '@warden/wardenprotocol-client/dist/warden.warden.v1beta2/types/warden/warden/v1beta2/signature';
-import { promisify } from 'util';
 
 import { IWardenConfiguration } from './types/configuration';
 import { KeyRequest } from './types/keyRequest';
@@ -11,7 +11,6 @@ import { INewSignatureRequest } from './types/newSignatureRequest';
 import { SignatureRequest } from './types/signatureRequest';
 import { ITransactionState } from './types/transactionState';
 
-const delay = promisify((ms: number, res: () => void) => setTimeout(res, ms));
 const keyRetentionMsec = 60_000;
 
 export class WardenService {
@@ -39,12 +38,12 @@ export class WardenService {
     while (this.configuration.pollingIntervalMsec >= 0) {
       await delay(this.configuration.pollingIntervalMsec);
 
-      for (const [key, retiredAt] of this.keys) {
+      for (const [id, retiredAt] of this.keys) {
         const nowMsec = new Date().getTime();
-        const keyResponse = await this.getKeyRequest(key).catch(console.error);
+        const keyResponse = await this.getKeyRequest(id).catch(console.error);
 
         if ((!!keyResponse && keyResponse.status !== 'KEY_REQUEST_STATUS_PENDING') || retiredAt < nowMsec) {
-          this.keys.delete(key);
+          this.keys.delete(id);
         }
       }
 
@@ -81,16 +80,16 @@ export class WardenService {
     while (this.configuration.pollingIntervalMsec >= 0) {
       await delay(this.configuration.pollingIntervalMsec);
 
-      for (const [key, retiredAt] of this.signatures) {
+      for (const [id, retiredAt] of this.signatures) {
         const nowMsec = new Date().getTime();
-        const keyResponse = await this.getSignatureRequest(key).catch(console.error);
+        const signatureRequest = await this.getSignatureRequest(id).catch(console.error);
 
-        if ((!!keyResponse && keyResponse.status !== 'SIGN_REQUEST_STATUS_PENDING') || retiredAt < nowMsec) {
-          this.signatures.delete(key);
+        if ((!!signatureRequest && signatureRequest.status !== 'SIGN_REQUEST_STATUS_PENDING') || retiredAt < nowMsec) {
+          this.signatures.delete(id);
         }
       }
 
-      const pendingKeys = await query
+      const pendingSignatures = await query
         .querySignatureRequests({
           keychain_id: keychainId,
           status: 'SIGN_REQUEST_STATUS_PENDING',
@@ -98,18 +97,26 @@ export class WardenService {
         })
         .catch(console.error);
 
-      if (!pendingKeys || !pendingKeys.data.sign_requests) continue;
+      if (!pendingSignatures || !pendingSignatures.data.sign_requests) continue;
 
-      for (let i = 0; i < +pendingKeys.data.sign_requests.length; i++) {
-        const request = pendingKeys.data.sign_requests[i];
+      for (let i = 0; i < +pendingSignatures.data.sign_requests.length; i++) {
+        const request = pendingSignatures.data.sign_requests[i];
 
         if (this.signatures.has(request.id)) continue;
 
         this.signatures.set(request.id, new Date().getTime() + keyRetentionMsec);
 
+        const key = await query
+          .queryKeyById({
+            id: request.key_id,
+          })
+          .catch(console.error);
+
+        if (!key) continue;
+
         yield {
           id: request.id,
-          keyId: request.key_id,
+          publicKey: key.data.key.public_key,
           keychainId: keychainId,
           keyType: request.key_type,
           creator: request.creator,

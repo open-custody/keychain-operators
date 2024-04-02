@@ -45,9 +45,31 @@ export class FordefiService {
     return { ...vault, public_key: this.decompressPublicKey(vault.public_key_compressed, 'base64') };
   }
 
+  async getVaults(search: string, page: number, size: number): Promise<Vaults> {
+    const url = new URL(
+      `vaults?page=${page}&size=${size}&search=${search}`,
+      this.configuration.fordefiAPIEndpoint,
+    ).toString();
+
+    const headers = {
+      Accept: 'application/json',
+      Authorization: `Bearer ${this.configuration.accessToken}`,
+    };
+
+    const response = await axios.get<Vaults>(url, { headers });
+
+    return {
+      ...response.data,
+      vaults: response.data.vaults.map((x) => ({
+        ...x,
+        public_key: this.decompressPublicKey(x.public_key_compressed, 'base64'),
+      })),
+    };
+  }
+
   async createBlackBoxSignatureRequest(
     createParams: CreateBlackBoxSignatureRequestParams,
-    idempontenceId = null,
+    idempontenceId: string = null,
   ): Promise<BlackBoxSignature> {
     const url = new URL('transactions', this.configuration.fordefiAPIEndpoint);
 

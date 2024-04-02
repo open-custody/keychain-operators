@@ -1,6 +1,6 @@
 export interface INewSignatureRequest {
   id: string;
-  keyId: string;
+  publicKey: string;
   keychainId: string;
   creator: string;
   signingData: string;
