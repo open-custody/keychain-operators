@@ -32,6 +32,7 @@ WARDEN_SIGNER_MNEMONIC=test test test test test test test test test test test te
 
 BROKER_CONNECTION_STRING=amqps://user:password@host:5671
 BROKER_NEW_KEY_QUEUE_NAME=warden-dev-new-key-request-id
+BROKER_SIGNATURE_STATUS_QUEUE_NAME=warden-dev-signature-status
 BROKER_RECONNECT_MSEC=10000
 BROKER_QUEUE_PREFETCH=1
 BROKER_CONSUMER_RETRY_ATTEMPTS=3
