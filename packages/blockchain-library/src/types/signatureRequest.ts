@@ -1,7 +1,0 @@
-export interface SignatureRequest {
-  status:
-    | 'SIGN_REQUEST_STATUS_UNSPECIFIED'
-    | 'SIGN_REQUEST_STATUS_PENDING'
-    | 'SIGN_REQUEST_STATUS_FULFILLED'
-    | 'SIGN_REQUEST_STATUS_REJECTED';
-}

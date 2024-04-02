@@ -9,8 +9,7 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "tsc --build --verbose",
-    "build-warden": "./scripts/build-warden.sh"
+    "build": "tsc --build --force --verbose"
   },
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",

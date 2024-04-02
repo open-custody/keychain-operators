@@ -1,6 +1,6 @@
 export interface ISignatureStatusMessage {
   creator: string;
-  requestId: number;
+  requestId: string;
   success: boolean;
   reason: string;
   keyProviderRequestId: string;

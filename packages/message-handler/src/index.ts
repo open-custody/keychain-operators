@@ -10,7 +10,6 @@ import { NewSignatureProcessor } from './processors/newSignatureProcessor';
 
 export async function main(): Promise<void> {
   const warden = new WardenService({
-    apiURL: process.env.WARDEN_API_URL,
     pollingIntervalMsec: +process.env.WARDEN_POLLING_INTERVAL_MSEC,
     prefix: process.env.WARDEN_CHAIN_PREFIX,
     rpcURL: process.env.WARDEN_RPC_URL,
