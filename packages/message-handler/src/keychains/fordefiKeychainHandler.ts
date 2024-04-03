@@ -1,6 +1,10 @@
 import { FordefiService } from '@warden/fordefi-library';
 import { Vault } from '@warden/fordefi-library/dist/types/vault/vault';
-import { INewKeyRequestMessage, INewSignatureRequestMessage } from '@warden/message-broker-library';
+import {
+  INewKeyRequestMessage,
+  INewSignatureRequestMessage,
+  ISignatureStatusMessage,
+} from '@warden/message-broker-library';
 import { uuid } from '@warden/utils';
 
 import { ISignatureResult, SignatureResultStatus } from '../types/signResult';
@@ -86,5 +90,10 @@ export class FordefiKeychainHandler implements IKeychainHandler {
       status: status,
       reason: reason,
     };
+  }
+
+  async getSignature(data: ISignatureStatusMessage): Promise<Buffer> {
+    const blackBoxSignature = await this.fordefi.getBlackBoxSignatureResult(data.keyProviderRequestId);
+    return Buffer.from(blackBoxSignature.signatures[0].data, 'base64');
   }
 }
