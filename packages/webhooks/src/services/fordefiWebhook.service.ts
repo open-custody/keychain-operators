@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { ISignatureStatusMessage, MessageBrokerProducer } from '@warden/message-broker-library';
+import { ISignatureStatusMessage, KeyProvider, MessageBrokerProducer } from '@warden/message-broker-library';
 
 import { TOKEN as messageProducerToken } from '../infrastructure/messageBroker.provider';
 import { FordefiWebhookEvent } from '../models/fordefi.webhook.event';
@@ -24,6 +24,7 @@ export class FordefiWebhookService {
       success: fordefiSignatureState === 'completed',
       reason: fordefiSignatureState,
       keyProviderRequestId: fordefiWebhookEvent.event.transaction_id,
+      provider: KeyProvider.Fordefi,
     });
   }
 }
