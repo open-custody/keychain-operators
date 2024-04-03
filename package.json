@@ -10,7 +10,6 @@
   ],
   "scripts": {
     "build": "tsc --build --force --verbose",
-    "build-warden": "./scripts/build-warden.sh",
     "build:blockchain-lib": "yarn workspace @warden/blockchain-library build",
     "build:message-broker-lib": "yarn workspace @warden/message-broker-library build",
     "build:utils": "yarn workspace @warden/utils build",

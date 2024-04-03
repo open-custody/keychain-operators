@@ -5,13 +5,9 @@ WORKDIR /build
 COPY . .
 RUN rm -rf packages
 COPY ./packages/blockchain-library packages/blockchain-library
-COPY ./packages/wardenprotocol-client packages/wardenprotocol-client
 COPY ./packages/utils-library packages/utils-library
 RUN apt-get -y update && apt-get -y install git && apt-get clean
-RUN git submodule init
-RUN git submodule update
 RUN yarn install --frozen-lockfile
-RUN yarn build-warden
 RUN yarn build:blockchain-lib
 RUN rm -rf packages/*/src packages/*/node_modules packages/*/tsconfig*
 
