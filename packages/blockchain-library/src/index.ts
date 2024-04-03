@@ -1,7 +1,7 @@
-import { DirectSecp256k1HdWallet } from '@cosmjs/proto-signing';
+import { DirectSecp256k1HdWallet, Registry } from '@cosmjs/proto-signing';
 import { SigningStargateClient } from '@cosmjs/stargate';
 import { delay } from '@warden/utils';
-import { warden } from '@wardenprotocol/wardjs';
+import { cosmosProtoRegistry, warden, wardenProtoRegistry } from '@wardenprotocol/wardjs';
 import { KeyRequest, KeyRequestStatus } from '@wardenprotocol/wardjs/dist/codegen/warden/warden/v1beta2/key';
 import { SignRequest, SignRequestStatus } from '@wardenprotocol/wardjs/dist/codegen/warden/warden/v1beta2/signature';
 
@@ -37,7 +37,9 @@ export class WardenService {
     const accounts = await wallet.getAccounts();
     const account = accounts[0].address;
 
-    const client = await SigningStargateClient.connectWithSigner(this.configuration.rpcURL, wallet);
+    const client = await SigningStargateClient.connectWithSigner(this.configuration.rpcURL, wallet, {
+      registry: new Registry([...wardenProtoRegistry, ...cosmosProtoRegistry]),
+    });
 
     return { client, account };
   }

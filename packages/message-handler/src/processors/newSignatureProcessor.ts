@@ -18,6 +18,8 @@ export class NewSignatureProcessor extends Processor<INewSignatureRequestMessage
   }
 
   async handle(data: INewSignatureRequestMessage, attempts: number): Promise<boolean> {
+    console.log(`New Signature message: ${data.requestId}`);
+
     const requestId = BigInt(data.requestId);
 
     if (attempts === 0) {

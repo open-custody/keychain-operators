@@ -17,6 +17,8 @@ export class NewKeyProcessor extends Processor<INewKeyRequestMessage> {
   }
 
   async handle(data: INewKeyRequestMessage, attempts: number): Promise<boolean> {
+    console.log(`New Key message: ${data.requestId}`);
+
     const requestId = BigInt(data.requestId);
 
     if (attempts === 0) {
