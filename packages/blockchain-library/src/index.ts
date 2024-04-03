@@ -2,7 +2,12 @@ import { DirectSecp256k1HdWallet, Registry } from '@cosmjs/proto-signing';
 import { SigningStargateClient } from '@cosmjs/stargate';
 import { delay } from '@warden/utils';
 import { cosmosProtoRegistry, warden, wardenProtoRegistry } from '@wardenprotocol/wardjs';
+import { PageRequest } from '@wardenprotocol/wardjs/dist/codegen/cosmos/base/query/v1beta1/pagination';
 import { KeyRequest, KeyRequestStatus } from '@wardenprotocol/wardjs/dist/codegen/warden/warden/v1beta2/key';
+import {
+  QueryKeyRequestsRequest,
+  QuerySignatureRequestsRequest,
+} from '@wardenprotocol/wardjs/dist/codegen/warden/warden/v1beta2/query';
 import { SignRequest, SignRequestStatus } from '@wardenprotocol/wardjs/dist/codegen/warden/warden/v1beta2/signature';
 
 import { IWardenConfiguration } from './types/configuration';
@@ -60,12 +65,13 @@ export class WardenService {
       }
 
       const pendingKeys = await query
-        .keyRequests({
-          spaceId: 0n, // 0 means "unspecified"
-          keychainId: keychainId,
-          status: KeyRequestStatus.KEY_REQUEST_STATUS_PENDING,
-          pagination: { limit: 100n, countTotal: false, offset: 0n, reverse: false, key: new Uint8Array() },
-        })
+        .keyRequests(
+          QueryKeyRequestsRequest.fromPartial({
+            keychainId: keychainId,
+            status: KeyRequestStatus.KEY_REQUEST_STATUS_PENDING,
+            pagination: PageRequest.fromPartial({ limit: BigInt(100) }),
+          }),
+        )
         .then((x) => x.keyRequests)
         .catch(console.error);
 
@@ -104,11 +110,13 @@ export class WardenService {
       }
 
       const pendingSignatures = await query
-        .signatureRequests({
-          keychainId: keychainId,
-          status: SignRequestStatus.SIGN_REQUEST_STATUS_PENDING,
-          pagination: { limit: 100n, countTotal: false, offset: 0n, reverse: false, key: new Uint8Array() },
-        })
+        .signatureRequests(
+          QuerySignatureRequestsRequest.fromPartial({
+            keychainId: keychainId,
+            status: SignRequestStatus.SIGN_REQUEST_STATUS_PENDING,
+            pagination: PageRequest.fromPartial({ limit: BigInt(100) }),
+          }),
+        )
         .then((x) => x.signRequests)
         .catch(console.error);
 
