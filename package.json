@@ -10,7 +10,18 @@
   ],
   "scripts": {
     "build": "tsc --build --force --verbose",
-    "build-warden": "./scripts/build-warden.sh"
+    "build-warden": "./scripts/build-warden.sh",
+    "build:blockchain-lib": "yarn workspace @warden/blockchain-library build",
+    "build:message-broker-lib": "yarn workspace @warden/message-broker-library build",
+    "build:utils": "yarn workspace @warden/utils build",
+    "build:fordefi-lib": "yarn workspace @warden/fordefi-library build",
+    "build:libs": "yarn build:fordefi-lib && yarn build:message-broker-lib && yarn build:utils",
+    "build:blockchain-listener": "yarn workspace @warden/blockchain-listener build",
+    "build:message-handler": "yarn workspace @warden/message-handler build",
+    "build:webhooks": "yarn workspace @warden/webhooks build",
+    "blockchain-listener": "yarn workspace @warden/blockchain-listener start",
+    "message-handler": "yarn workspace @warden/message-handler start",
+    "webhooks": "yarn workspace @warden/webhooks start"
   },
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
