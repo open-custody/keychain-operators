@@ -61,7 +61,7 @@ export class WardenService {
 
       const pendingKeys = await query
         .keyRequests({
-          spaceId: 0n,
+          spaceId: 0n, // 0 means "unspecified"
           keychainId: keychainId,
           status: KeyRequestStatus.KEY_REQUEST_STATUS_PENDING,
           pagination: { limit: 100n, countTotal: false, offset: 0n, reverse: false, key: new Uint8Array() },
