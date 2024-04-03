@@ -1,7 +1,7 @@
 import { WardenService } from '@warden/blockchain-library';
 import { FordefiService } from '@warden/fordefi-library';
 import { KeyProvider, MessageBrokerConsumer } from '@warden/message-broker-library';
-import { config } from 'dotenv';
+import 'dotenv/config';
 
 import { FordefiKeychainHandler } from './keychains/fordefiKeychainHandler';
 import { IKeychainHandler } from './keychains/keychainHandler';
@@ -10,7 +10,6 @@ import { NewSignatureProcessor } from './processors/newSignatureProcessor';
 import { SignatureStatusProcessor } from './processors/signatureStatusProcessor';
 
 export async function main(): Promise<void> {
-  config();
   const warden = new WardenService({
     apiURL: process.env.WARDEN_API_URL,
     pollingIntervalMsec: +process.env.WARDEN_POLLING_INTERVAL_MSEC,
