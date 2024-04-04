@@ -20,7 +20,7 @@ export class FordefiWebhookService {
 
     await this.producer.publish<ISignatureStatusMessage>({
       creator,
-      requestId: parseInt(requestId),
+      requestId: requestId,
       success: fordefiSignatureState === 'completed',
       reason: fordefiSignatureState,
       keyProviderRequestId: fordefiWebhookEvent.event.transaction_id,

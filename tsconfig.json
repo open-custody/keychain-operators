@@ -18,13 +18,16 @@
   ],
   "references": [
     {
+      "path": "./packages/utils-library"
+    },
+    {
       "path": "./packages/blockchain-library"
     },
     {
-      "path": "./packages/message-broker-library"
+      "path": "./packages/fordefi-library"
     },
     {
-      "path": "./packages/fordefi-library"
+      "path": "./packages/message-broker-library"
     },
     {
       "path": "./packages/blockchain-listener"
@@ -35,9 +38,6 @@
     {
       "path": "./packages/webhooks"
     },
-    {
-      "path": "./packages/utils-library"
-    }
   ],
   "compileOnSave": true
 }

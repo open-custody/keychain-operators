@@ -35,7 +35,7 @@ export class FordefiKeychainHandler implements IKeychainHandler {
     const key = `cr_${data.creator}-srq-${data.requestId}-sd-${data.signingData}`;
     const idempotenceId = uuid(key, this.uuidV5Namespace);
 
-    const publicKey = Buffer.from(data.publicKey, 'base64');
+    const publicKey = Buffer.from(data.publicKey, "base64");
     let vault: Vault;
 
     for (let i = 1; !vault; i++) {

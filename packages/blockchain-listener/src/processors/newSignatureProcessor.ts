@@ -19,11 +19,10 @@ export class NewSignatureProcessor extends Processor<INewSignatureRequest> {
       return this.producer.publish<INewSignatureRequestMessage>({
         provider: this.provider,
         creator: data.creator,
-        publicKey: data.publicKey,
-        keychainId: data.keychainId,
-        requestId: data.id,
-        keyType: data.keyType,
-        signingData: data.signingData,
+        publicKey: Buffer.from(data.publicKey).toString('base64'),
+        keychainId: data.keychainId.toString(),
+        requestId: data.id.toString(),
+        signingData: Buffer.from(data.signingData).toString('base64'),
       });
     } catch (error) {
       console.error(error);
