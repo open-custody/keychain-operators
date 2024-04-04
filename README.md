@@ -9,6 +9,8 @@ WARDEN_RPC_URL=http://127.0.0.1:26657
 WARDEN_POLLING_INTERVAL_MSEC=5000
 WARDEN_CHAIN_PREFIX=warden
 WARDEN_SIGNER_MNEMONIC=test test test test test test test test test test test test test test test test test test test test test test test test
+WARDEN_SIGNER_GAS=400000
+WARDEN_SIGNER_GAS_UWARD=500
 WARDEN_FORDEFI_KEYCHAIN_ID=3
 
 BROKER_CONNECTION_STRING=amqps://user:password@host:5671
@@ -27,6 +29,8 @@ WARDEN_RPC_URL=http://127.0.0.1:26657
 WARDEN_POLLING_INTERVAL_MSEC=5000
 WARDEN_CHAIN_PREFIX=warden
 WARDEN_SIGNER_MNEMONIC=test test test test test test test test test test test test test test test test test test test test test test test test
+WARDEN_SIGNER_GAS=400000
+WARDEN_SIGNER_GAS_UWARD=500
 
 BROKER_CONNECTION_STRING=amqps://user:password@host:5671
 BROKER_NEW_KEY_QUEUE_NAME=warden-dev-new-key-request-id

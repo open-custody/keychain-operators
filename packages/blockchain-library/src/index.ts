@@ -164,8 +164,8 @@ export class WardenService {
       signer.account,
       [message],
       {
-        gas: '400000',
-        amount: [{ denom: 'uward', amount: '500' }],
+        gas: this.configuration.signerGas,
+        amount: [{ denom: 'uward', amount: this.configuration.signerGasUwardAmount }],
       },
       '',
     );
@@ -189,8 +189,8 @@ export class WardenService {
       signer.account,
       [message],
       {
-        gas: '400000',
-        amount: [{ denom: 'uward', amount: '500' }],
+        gas: this.configuration.signerGas,
+        amount: [{ denom: 'uward', amount: this.configuration.signerGasUwardAmount }],
       },
       '',
     );
@@ -212,8 +212,8 @@ export class WardenService {
       signer.account,
       [message],
       {
-        gas: '400000',
-        amount: [{ denom: 'uward', amount: '500' }],
+        gas: this.configuration.signerGas,
+        amount: [{ denom: 'uward', amount: this.configuration.signerGasUwardAmount }],
       },
       '',
     );
@@ -235,8 +235,8 @@ export class WardenService {
       signer.account,
       [message],
       {
-        gas: '400000',
-        amount: [{ denom: 'uward', amount: '500' }],
+        gas: this.configuration.signerGas,
+        amount: [{ denom: 'uward', amount: this.configuration.signerGasUwardAmount }],
       },
       '',
     );

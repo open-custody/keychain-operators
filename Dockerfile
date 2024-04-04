@@ -6,7 +6,6 @@ COPY . .
 RUN rm -rf packages
 COPY ./packages/blockchain-library packages/blockchain-library
 COPY ./packages/utils-library packages/utils-library
-RUN apt-get -y update && apt-get -y install git && apt-get clean
 RUN yarn install --frozen-lockfile
 RUN yarn build:blockchain-lib
 RUN rm -rf packages/*/src packages/*/node_modules packages/*/tsconfig*

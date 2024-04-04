@@ -15,6 +15,8 @@ export async function main(): Promise<void> {
     prefix: process.env.WARDEN_CHAIN_PREFIX,
     rpcURL: process.env.WARDEN_RPC_URL,
     signerMnemonic: process.env.WARDEN_SIGNER_MNEMONIC,
+    signerGas: process.env.WARDEN_SIGNER_GAS,
+    signerGasUwardAmount: process.env.WARDEN_SIGNER_GAS_UWARD,
   });
 
   const fordefi = new FordefiService({
