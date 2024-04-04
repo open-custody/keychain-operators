@@ -11,6 +11,7 @@ env:
   APP_NAME: "message-handler"
   MAIN_APP_NAME: "warden-keychain-operators"
   REGISTRY: ${{ vars.REGISTRY }}
+  REPLICAS: 3
   NAMESPACE: devnet
   LIMIT_CPU: "500m"
   LIMIT_MEMORY: "512Mi"
@@ -99,6 +100,7 @@ jobs:
            --set image.tag=${{ needs.build-image-app.outputs.output_tag }} \
            --set resources.limits.cpu=${{ env.LIMIT_CPU }} \
            --set resources.limits.memory=${{ env.LIMIT_MEMORY }} \
+           --set replicaCount=${{ env.REPLICAS }} \
            -f extraEnv.yml \
            ./charts/${{ env.MAIN_APP_NAME }}/${{ env.APP_NAME }}/
 
