@@ -83,6 +83,11 @@ jobs:
           repository: ${{ vars.HELM_REPOSITORY }}
           ref: 'main'
           token: ${{ secrets.PAT }}
+      - name: 'Prep extraEnv'
+        run: |
+            cat <<EOF > extraEnv.yml
+            ${{ vars.WEBHOOKS_EXTRAENV }}
+            EOF
       - name: Update kube config
         run: aws eks update-kubeconfig --name ${{ vars.CLUSTER_NAME }} --region $AWS_REGION
       - uses: azure/setup-helm@v3
@@ -99,5 +104,6 @@ jobs:
            --set image.tag=${{ needs.build-image-app.outputs.output_tag }} \
            --set resources.limits.cpu=${{ env.LIMIT_CPU }} \
            --set resources.limits.memory=${{ env.LIMIT_MEMORY }} \
+           -f extraEnv.yml \
            ./charts/${{ env.MAIN_APP_NAME }}/${{ env.APP_NAME }}/
 
