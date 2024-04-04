@@ -1,3 +1,0 @@
-[submodule "external/wardenprotocol"]
-	path = external/wardenprotocol
-	url = git@github.com:warden-protocol/wardenprotocol.git

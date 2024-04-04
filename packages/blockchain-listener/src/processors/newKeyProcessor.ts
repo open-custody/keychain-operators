@@ -19,9 +19,9 @@ export class NewKeyProcessor extends Processor<INewKeyRequest> {
       return this.producer.publish<INewKeyRequestMessage>({
         provider: this.provider,
         creator: data.creator,
-        keychainId: data.keychainId,
-        requestId: data.id,
-        spaceId: data.spaceId,
+        keychainId: data.keychainId.toString(),
+        requestId: data.id.toString(),
+        spaceId: data.spaceId.toString(),
       });
     } catch (error) {
       console.error(error);
