@@ -1,8 +1,7 @@
 export interface INewSignatureRequest {
-  id: string;
-  publicKey: string;
-  keychainId: string;
+  id: bigint;
+  publicKey: Uint8Array;
+  keychainId: bigint;
   creator: string;
-  signingData: string;
-  keyType: 'KEY_TYPE_UNSPECIFIED' | 'KEY_TYPE_ECDSA_SECP256K1' | 'KEY_TYPE_EDDSA_ED25519';
+  signingData: Uint8Array;
 }

@@ -1,6 +1,6 @@
 export interface INewKeyRequest {
-  id: string;
-  keychainId: string;
-  spaceId: string;
+  id: bigint;
+  keychainId: bigint;
+  spaceId: bigint;
   creator: string;
 }

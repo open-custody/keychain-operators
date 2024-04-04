@@ -11,11 +11,12 @@ import { SignatureStatusProcessor } from './processors/signatureStatusProcessor'
 
 export async function main(): Promise<void> {
   const warden = new WardenService({
-    apiURL: process.env.WARDEN_API_URL,
     pollingIntervalMsec: +process.env.WARDEN_POLLING_INTERVAL_MSEC,
     prefix: process.env.WARDEN_CHAIN_PREFIX,
     rpcURL: process.env.WARDEN_RPC_URL,
     signerMnemonic: process.env.WARDEN_SIGNER_MNEMONIC,
+    signerGas: process.env.WARDEN_SIGNER_GAS,
+    signerGasUwardAmount: process.env.WARDEN_SIGNER_GAS_UWARD,
   });
 
   const fordefi = new FordefiService({

@@ -7,11 +7,12 @@ import { NewSignatureProcessor } from './processors/newSignatureProcessor';
 
 export async function main(): Promise<void> {
   const warden = new WardenService({
-    apiURL: process.env.WARDEN_API_URL,
     pollingIntervalMsec: +process.env.WARDEN_POLLING_INTERVAL_MSEC,
     prefix: process.env.WARDEN_CHAIN_PREFIX,
     rpcURL: process.env.WARDEN_RPC_URL,
     signerMnemonic: process.env.WARDEN_SIGNER_MNEMONIC,
+    signerGas: process.env.WARDEN_SIGNER_GAS,
+    signerGasUwardAmount: process.env.WARDEN_SIGNER_GAS_UWARD,
   });
 
   const newKeyRequestProducer = new MessageBrokerProducer({
@@ -33,13 +34,13 @@ export async function main(): Promise<void> {
   await newSignatureRequestProducer.initChannel();
 
   const newFordefiKeyRequestProcess = new NewKeyProcessor(
-    warden.pollPendingKeyRequests(process.env.WARDEN_FORDEFI_KEYCHAIN_ID),
+    warden.pollPendingKeyRequests(BigInt(process.env.WARDEN_FORDEFI_KEYCHAIN_ID)),
     newKeyRequestProducer,
     KeyProvider.Fordefi,
   ).start();
 
   const newFordefiSignatureRequestProcess = new NewSignatureProcessor(
-    warden.pollPendingSignatureRequests(process.env.WARDEN_FORDEFI_KEYCHAIN_ID),
+    warden.pollPendingSignatureRequests(BigInt(process.env.WARDEN_FORDEFI_KEYCHAIN_ID)),
     newSignatureRequestProducer,
     KeyProvider.Fordefi,
   ).start();
