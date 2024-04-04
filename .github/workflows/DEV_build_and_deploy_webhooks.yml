@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 env:
-  APP_NAME: "client-example"
+  APP_NAME: "webhook"
   REGISTRY: ${{ vars.REGISTRY }}
   NAMESPACE: devnet
   LIMIT_CPU: "500m"
