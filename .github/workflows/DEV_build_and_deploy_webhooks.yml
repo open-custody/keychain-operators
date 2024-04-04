@@ -8,6 +8,7 @@ on:
 
 env:
   APP_NAME: "webhooks"
+  MAIN_APP_NAME: "warden-keychain-operators"
   REGISTRY: ${{ vars.REGISTRY }}
   NAMESPACE: devnet
   LIMIT_CPU: "500m"
@@ -90,13 +91,13 @@ jobs:
       - name: Deploy to EKS
         run: |
           helm upgrade \
-           -i ${{ env.APP_NAME }} \
+           -i ${{ env.APP_NAME }}-${{ env.MAIN_APP_NAME }} \
            -n devnet \
-           --set nameOverride=${{ env.APP_NAME }} \
+           --set nameOverride=${{ env.APP_NAME }}-${{ env.MAIN_APP_NAME }} \
            --set image.repository=${{ env.REGISTRY }}  \
            --set image.name=${{ env.APP_NAME }} \
            --set image.tag=${{ needs.build-image-app.outputs.output_tag }} \
            --set resources.limits.cpu=${{ env.LIMIT_CPU }} \
            --set resources.limits.memory=${{ env.LIMIT_MEMORY }} \
-           ./charts/${{ env.APP_NAME }}/
+           ./charts/${{ env.MAIN_APP_NAME }}/${{ env.APP_NAME }}/
 
