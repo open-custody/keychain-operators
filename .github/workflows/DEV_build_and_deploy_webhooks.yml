@@ -99,3 +99,4 @@ jobs:
            --set resources.limits.cpu=${{ env.LIMIT_CPU }} \
            --set resources.limits.memory=${{ env.LIMIT_MEMORY }} \
            ./charts/${{ env.APP_NAME }}/
+
