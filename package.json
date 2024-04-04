@@ -14,7 +14,7 @@
     "build:message-broker-lib": "yarn workspace @warden/message-broker-library build",
     "build:utils": "yarn workspace @warden/utils build",
     "build:fordefi-lib": "yarn workspace @warden/fordefi-library build",
-    "build:libs": "yarn build:fordefi-lib && yarn build:message-broker-lib && yarn build:utils",
+    "build:libs": "yarn build:utils && yarn build:fordefi-lib && yarn build:message-broker-lib",
     "build:blockchain-listener": "yarn workspace @warden/blockchain-listener build",
     "build:message-handler": "yarn workspace @warden/message-handler build",
     "build:webhooks": "yarn workspace @warden/webhooks build",
