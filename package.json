@@ -10,7 +10,7 @@
   ],
   "scripts": {
     "build": "tsc --build --force --verbose",
-    "build:blockchain-lib": "yarn workspace @warden/blockchain-library build",
+    "build:blockchain-lib": "yarn build:utils && yarn workspace @warden/blockchain-library build",
     "build:message-broker-lib": "yarn workspace @warden/message-broker-library build",
     "build:utils": "yarn workspace @warden/utils build",
     "build:fordefi-lib": "yarn workspace @warden/fordefi-library build",
