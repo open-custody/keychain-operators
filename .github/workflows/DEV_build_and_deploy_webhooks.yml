@@ -46,12 +46,6 @@ jobs:
       - id: tag_env
         run: echo "tag=${{ env.DOCKER_METADATA_OUTPUT_VERSION }}"  >> $GITHUB_OUTPUT
 
-      - name: Make .env
-        run: |
-          cat <<EOF > .env
-          ${{ vars.LANDING_ENV_FILE}}
-          EOF
-
       - name: Build and push
         uses: docker/build-push-action@v4
         with:
@@ -86,7 +80,7 @@ jobs:
       - name: 'Prep extraEnv'
         run: |
             cat <<EOF > extraEnv.yml
-            ${{ vars.WEBHOOKS_EXTRAENV }}
+            ${{ secrets.WEBHOOKS_EXTRAENV }}
             EOF
       - name: Update kube config
         run: aws eks update-kubeconfig --name ${{ vars.CLUSTER_NAME }} --region $AWS_REGION
