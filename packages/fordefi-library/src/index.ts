@@ -77,7 +77,8 @@ export class FordefiService {
     const timestamp = new Date().getTime();
     const requestBody = JSON.stringify(createParams);
     const payload = `${path}|${timestamp}|${requestBody}`;
-    const privateKey = crypto.createPrivateKey(this.configuration.apiClientPrivateKey);
+    const privateKeyBuffer = Buffer.from(this.configuration.apiClientPrivateKey, 'base64');
+    const privateKey = crypto.createPrivateKey(privateKeyBuffer);
     const sign = crypto.createSign('SHA256').update(payload, 'utf8').end();
     const signature = sign.sign(privateKey, 'base64');
 
