@@ -10,6 +10,10 @@ export class FordefiWebhookService {
   constructor(@Inject(messageProducerToken) private producer: MessageBrokerProducer) {}
 
   async handle(fordefiWebhookEvent: FordefiWebhookEvent) {
+    console.log(
+      `New transaction event - ${fordefiWebhookEvent.event_id}, attempt: ${fordefiWebhookEvent.attempt}, event: ${JSON.stringify(fordefiWebhookEvent.event)}`,
+    );
+
     const fordefiSignatureState = fordefiWebhookEvent.event.state;
 
     if (fordefiSignatureState !== ('completed' || 'aborted' || 'stuck' || 'canceled')) {
@@ -26,5 +30,7 @@ export class FordefiWebhookService {
       keyProviderRequestId: fordefiWebhookEvent.event.transaction_id,
       provider: KeyProvider.Fordefi,
     });
+
+    console.log(`Transaction event ${fordefiWebhookEvent.event_id} published`);
   }
 }

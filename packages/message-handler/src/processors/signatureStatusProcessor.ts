@@ -17,7 +17,7 @@ export class SignatureStatusProcessor extends Processor<ISignatureStatusMessage>
   }
 
   async handle(data: ISignatureStatusMessage, attempts: number): Promise<boolean> {
-    console.log(`New Signature Status message: ${data.requestId}`);
+    console.log(`New Signature Status message: ${data.requestId}, success: ${data.success}, reason: ${data.reason}`);
 
     const requestId = BigInt(data.requestId);
 
