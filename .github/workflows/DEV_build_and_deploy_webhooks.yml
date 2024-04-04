@@ -1,4 +1,4 @@
-name: "DEV deploy WEBHOOK"
+name: "DEV deploy WEBHOOKS"
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 env:
-  APP_NAME: "webhook"
+  APP_NAME: "webhooks"
   REGISTRY: ${{ vars.REGISTRY }}
   NAMESPACE: devnet
   LIMIT_CPU: "500m"
