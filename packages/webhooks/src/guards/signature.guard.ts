@@ -18,7 +18,7 @@ export class SignatureGuard implements CanActivate {
     }
 
     const verifier = crypto.createVerify('sha256');
-    verifier.update(request.rawBody);
+    verifier.update(request.rawBody!);
     verifier.end();
 
     const isValid = verifier.verify(fordefiPublicKey, signature, 'base64');
