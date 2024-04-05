@@ -20,7 +20,7 @@ export class FordefiWebhookService {
       return;
     }
 
-    const [_, creator, requestId] = fordefiWebhookEvent.event.note.match(FORDEFI_NOTE_REGEX);
+    const [_, creator, requestId] = fordefiWebhookEvent.event.note.match(FORDEFI_NOTE_REGEX)!;
 
     await this.producer.publish<ISignatureStatusMessage>({
       creator,

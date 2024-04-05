@@ -45,19 +45,19 @@ export class NewSignatureProcessor extends Processor<INewSignatureRequestMessage
     }
 
     if (result.status === SignatureResultStatus.Failed) {
-      return await this.reject(requestId, result.reason);
+      return await this.reject(requestId, result.reason!);
     }
 
-    return await this.fulfill(requestId, result.signature);
+    return await this.fulfill(requestId, result.signature!);
   }
 
   async fulfill(requestId: bigint, signedData: Buffer): Promise<boolean> {
     const transaction = await this.warden.fulfilSignatureRequest(requestId, signedData);
-    return transaction && transaction.hash && transaction.errorCode === 0;
+    return transaction?.hash !== undefined && transaction?.errorCode === 0;
   }
 
   async reject(requestId: bigint, reason: string): Promise<boolean> {
     const transaction = await this.warden.rejectSignatureRequest(requestId, reason);
-    return transaction && transaction.hash && transaction.errorCode === 0;
+    return transaction?.hash !== undefined && transaction?.errorCode === 0;
   }
 }

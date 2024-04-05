@@ -10,7 +10,7 @@ export abstract class Processor<T> {
     while (true) {
       try {
         for await (const request of this.generator(this.keychainId)) {
-          let result: boolean;
+          let result = false;
 
           while (result !== true) {
             result = await this.handle(request);

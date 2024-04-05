@@ -42,13 +42,13 @@ export class NewKeyProcessor extends Processor<INewKeyRequestMessage> {
     return await this.fulfill(requestId, publicKey);
   }
 
-  async fulfill(requestId: bigint, publiCKey: Buffer) {
+  async fulfill(requestId: bigint, publiCKey: Buffer): Promise<boolean> {
     const transaction = await this.warden.fulfilKeyRequest(requestId, publiCKey);
-    return transaction && transaction.hash && transaction.errorCode === 0;
+    return transaction?.hash !== undefined && transaction?.errorCode === 0;
   }
 
-  async reject(requestId: bigint, reason: string) {
+  async reject(requestId: bigint, reason: string): Promise<boolean> {
     const transaction = await this.warden.rejectKeyRequest(requestId, reason);
-    return transaction && transaction.hash && transaction.errorCode === 0;
+    return transaction?.hash !== undefined && transaction?.errorCode === 0;
   }
 }
