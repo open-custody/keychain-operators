@@ -52,8 +52,10 @@ export class WardenService {
   async *pollPendingKeyRequests(keychainId: bigint): AsyncGenerator<INewKeyRequest> {
     const query = (await this.query()).warden.warden.v1beta2;
 
-    while (this.configuration.pollingIntervalMsec >= 0) {
+    while (true) {
       await delay(this.configuration.pollingIntervalMsec);
+
+      console.log(`Keys in cache: ${this.keys.size}`);
 
       for (const [id, retiredAt] of this.keys) {
         const now = new Date().getTime();
@@ -97,8 +99,10 @@ export class WardenService {
   async *pollPendingSignatureRequests(keychainId: bigint): AsyncGenerator<INewSignatureRequest> {
     const query = (await this.query()).warden.warden.v1beta2;
 
-    while (this.configuration.pollingIntervalMsec >= 0) {
+    while (true) {
       await delay(this.configuration.pollingIntervalMsec);
+
+      console.log(`Signatures in cache: ${this.signatures.size}`);
 
       for (const [id, retiredAt] of this.signatures) {
         const now = new Date().getTime();

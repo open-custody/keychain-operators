@@ -5,11 +5,12 @@ import { Processor } from './processor';
 
 export class NewSignatureProcessor extends Processor<INewSignatureRequest> {
   constructor(
-    generator: AsyncGenerator<INewSignatureRequest>,
+    keychainId: bigint,
+    generator: (keychainId: bigint) => AsyncGenerator<INewSignatureRequest, any, unknown>,
     private producer: MessageBrokerProducer,
     private provider: KeyProvider,
   ) {
-    super(generator);
+    super(keychainId, generator);
   }
 
   async handle(data: INewSignatureRequest): Promise<boolean> {
