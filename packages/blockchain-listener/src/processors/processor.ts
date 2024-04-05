@@ -1,12 +1,15 @@
 import { delay } from '@warden/utils';
 
 export abstract class Processor<T> {
-  constructor(private generator: AsyncGenerator<T>) {}
+  constructor(
+    private keychainId: bigint,
+    private generator: (keychainId: bigint) => AsyncGenerator<T, any, unknown>,
+  ) {}
 
   async start(): Promise<void> {
     while (true) {
       try {
-        for await (const request of this.generator) {
+        for await (const request of this.generator(this.keychainId)) {
           let result: boolean;
 
           while (result !== true) {
