@@ -35,14 +35,14 @@ export async function main(): Promise<void> {
 
   const newFordefiKeyRequestProcess = new NewKeyProcessor(
     BigInt(process.env.WARDEN_FORDEFI_KEYCHAIN_ID),
-    warden.pollPendingKeyRequests,
+    warden.pollPendingKeyRequests.bind(warden),
     newKeyRequestProducer,
     KeyProvider.Fordefi,
   ).start();
 
   const newFordefiSignatureRequestProcess = new NewSignatureProcessor(
     BigInt(process.env.WARDEN_FORDEFI_KEYCHAIN_ID),
-    warden.pollPendingSignatureRequests,
+    warden.pollPendingSignatureRequests.bind(warden),
     newSignatureRequestProducer,
     KeyProvider.Fordefi,
   ).start();
