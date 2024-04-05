@@ -35,10 +35,10 @@ export class FordefiKeychainHandler implements IKeychainHandler {
     const key = `cr_${data.creator}-srq-${data.requestId}-sd-${data.signingData}`;
     const idempotenceId = uuid(key, this.uuidV5Namespace);
 
-    const publicKey = Buffer.from(data.publicKey, "base64");
-    let vault: Vault;
+    const publicKey = Buffer.from(data.publicKey, 'base64');
+    let vault: Vault | undefined;
 
-    for (let i = 1; !vault; i++) {
+    for (let i = 1; vault === undefined; i++) {
       const page = await this.fordefi.getVaults(name, i, 100);
       vault = page.vaults.find((x) => x.public_key.equals(publicKey));
 
@@ -81,9 +81,9 @@ export class FordefiKeychainHandler implements IKeychainHandler {
     }
 
     const signature =
-      status === SignatureResultStatus.Success ? Buffer.from(result.signatures[0].data, 'base64') : null;
+      status === SignatureResultStatus.Success ? Buffer.from(result.signatures[0].data, 'base64') : undefined;
 
-    const reason = status === SignatureResultStatus.Failed ? result.state : null;
+    const reason = status === SignatureResultStatus.Failed ? result.state : undefined;
 
     return {
       signature: signature,
