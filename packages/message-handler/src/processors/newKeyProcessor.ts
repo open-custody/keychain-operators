@@ -44,11 +44,11 @@ export class NewKeyProcessor extends Processor<INewKeyRequestMessage> {
 
   async fulfill(requestId: bigint, publiCKey: Buffer): Promise<boolean> {
     const transaction = await this.warden.fulfilKeyRequest(requestId, publiCKey);
-    return transaction?.hash !== undefined && (transaction?.errorCode ?? -1) === 0;
+    return transaction?.hash !== undefined && transaction?.errorCode === 0;
   }
 
   async reject(requestId: bigint, reason: string): Promise<boolean> {
     const transaction = await this.warden.rejectKeyRequest(requestId, reason);
-    return transaction?.hash !== undefined && (transaction?.errorCode ?? -1) === 0;
+    return transaction?.hash !== undefined && transaction?.errorCode === 0;
   }
 }

@@ -48,11 +48,11 @@ export class SignatureStatusProcessor extends Processor<ISignatureStatusMessage>
 
   async fulfill(requestId: bigint, signature: Buffer): Promise<boolean> {
     const transaction = await this.warden.fulfilSignatureRequest(requestId, signature);
-    return transaction?.hash !== undefined && (transaction?.errorCode ?? -1) === 0;
+    return transaction?.hash !== undefined && transaction?.errorCode === 0;
   }
 
   async reject(requestId: bigint, reason: string): Promise<boolean> {
     const transaction = await this.warden.rejectSignatureRequest(requestId, reason);
-    return transaction?.hash !== undefined && (transaction?.errorCode ?? -1) === 0;
+    return transaction?.hash !== undefined && transaction?.errorCode === 0;
   }
 }

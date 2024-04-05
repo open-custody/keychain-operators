@@ -53,11 +53,11 @@ export class NewSignatureProcessor extends Processor<INewSignatureRequestMessage
 
   async fulfill(requestId: bigint, signedData: Buffer): Promise<boolean> {
     const transaction = await this.warden.fulfilSignatureRequest(requestId, signedData);
-    return transaction?.hash !== undefined && (transaction?.errorCode ?? -1) === 0;
+    return transaction?.hash !== undefined && transaction?.errorCode === 0;
   }
 
   async reject(requestId: bigint, reason: string): Promise<boolean> {
     const transaction = await this.warden.rejectSignatureRequest(requestId, reason);
-    return transaction?.hash !== undefined && (transaction?.errorCode ?? -1) === 0;
+    return transaction?.hash !== undefined && transaction?.errorCode === 0;
   }
 }
