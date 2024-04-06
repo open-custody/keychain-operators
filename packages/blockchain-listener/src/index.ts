@@ -28,10 +28,7 @@ export async function main(): Promise<void> {
   });
 
   await newKeyRequestProducer.initConnection();
-  await newKeyRequestProducer.initChannel();
-
   await newSignatureRequestProducer.initConnection();
-  await newSignatureRequestProducer.initChannel();
 
   const newFordefiKeyRequestProcess = new NewKeyProcessor(
     BigInt(process.env.WARDEN_FORDEFI_KEYCHAIN_ID),

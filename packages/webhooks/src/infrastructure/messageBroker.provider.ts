@@ -12,7 +12,6 @@ export const messageBrokerProducer = {
     });
 
     await messageBrokerProducer.initConnection();
-    await messageBrokerProducer.initChannel();
 
     return messageBrokerProducer;
   },
