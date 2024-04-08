@@ -18,6 +18,8 @@ class EnvironmentVariables {
 
   @IsNumber()
   BROKER_QUEUE_PREFETCH: number;
+
+  FORDEFI_API_USER_NAME: string;
 }
 
 export function validate(config: Record<string, unknown>) {

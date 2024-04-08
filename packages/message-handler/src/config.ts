@@ -22,6 +22,7 @@ const schema: JSONSchemaType<Env> = {
     'FORDEFI_CLIENT_PK',
     'FORDEFI_API_ENDPOINT',
     'FORDEFI_UUIDV5_NAMESPACE',
+    'FORDEFI_API_USER_NAME',
   ],
   properties: {
     WARDEN_RPC_URL: {
@@ -73,6 +74,9 @@ const schema: JSONSchemaType<Env> = {
       type: 'string',
     },
     FORDEFI_UUIDV5_NAMESPACE: {
+      type: 'string',
+    },
+    FORDEFI_API_USER_NAME: {
       type: 'string',
     },
   },
