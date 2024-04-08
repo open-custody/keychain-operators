@@ -30,6 +30,7 @@ export abstract class MessageBroker {
 
         this.connection = connection;
       })
+      .then(async (_) => await this.initChannel())
       .catch(async (error) => {
         console.error(error);
 
@@ -52,7 +53,7 @@ export abstract class MessageBroker {
           console.error(error);
 
           await delay(this.configuration.reconnectMsec);
-          await this.initChannel();
+          await this.initConnection();
         });
 
         this.channel = channel;
@@ -63,7 +64,7 @@ export abstract class MessageBroker {
         console.error(error);
 
         await delay(this.configuration.reconnectMsec);
-        await this.initChannel();
+        await this.initConnection();
       });
   }
 }
