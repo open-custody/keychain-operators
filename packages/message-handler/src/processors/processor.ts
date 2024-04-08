@@ -1,6 +1,6 @@
 import { WardenService } from '@warden/blockchain-library';
 import { MessageBrokerConsumer } from '@warden/message-broker-library';
-import { delay, logError } from '@warden/utils';
+import { delay, logError, serialize } from '@warden/utils';
 
 export abstract class Processor<T> {
   warden: WardenService;
@@ -24,7 +24,7 @@ export abstract class Processor<T> {
         try {
           return await this.handle(message, attempts);
         } catch (error) {
-          logError(`Error while handling the message: ${JSON.stringify(message)}. Error: ${error}`);
+          logError(`Error while handling the message: ${serialize(message)}. Error: ${error}`);
         } finally {
           attempts--;
         }
