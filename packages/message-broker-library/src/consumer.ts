@@ -1,3 +1,5 @@
+import { logError } from '@warden/utils';
+
 import { MessageBroker } from './broker';
 import { IMessageBrokerConsumerConfiguration } from './types/configuration';
 
@@ -18,7 +20,7 @@ export class MessageBrokerConsumer extends MessageBroker {
             if (handled) this.channel.ack(message!);
             else this.channel.reject(message!, false);
           })
-          .catch(console.error);
+          .catch((e) => logError(e));
       },
       {
         noAck: false,
