@@ -60,3 +60,70 @@ BROKER_RECONNECT_MSEC=10000
 BROKER_QUEUE_PREFETCH=1
 FORDEFI_API_USER_NAME=api-user-name
 ```
+
+# Deployment
+
+Before deploying a new keychain operator, the corresponding keychain must be created in Warden blockchain.
+
+1. Create keychain itself
+
+   `wardend tx warden new-keychain --description 'Keychain name' --from <KEYCHAIN_ADMIN_ACCOUNT> --chain-id wardenprotocol --node <RPC_URL>`
+
+2. Ensure the keychain has been created and export the keychain id to the KEYCHAIN_ID variable.
+
+   ```
+   wardend query warden keychains
+     description: "Keychain name"
+     id: "2"
+     ...
+
+   export KEYCHAIN_ID=2  # replace with the actual keychain ID
+   ```
+
+3. Account can be generated localy or created in wallet. Make sure to save the mnemonic of the created key as it will be
+   used in environment variables of the backend services. Example for generating localy:
+   ```
+   export KEYCHAIN_PARTY_NAME=my-keychain-party
+   wardend keys add $KEYCHAIN_PARTY_NAME
+   export KEYCHAIN_PARTY=$(wardend keys show -a $KEYCHAIN_PARTY_NAME)
+   ```
+4. Add the newly created keychain party to the keychain. It will be used by keychain operator to sign transactions.
+
+   `wardend tx warden add-keychain-party --keychain-id $KEYCHAIN_ID --party $KEYCHAIN_PARTY --from <KEYCHAIN_ADMIN_ACCOUNT> --chain-id wardenprotocol`
+
+5. Top up the keychain party with WARD tokens.
+   `wardend tx bank send <FROM_ACCOUNT> <KEYCHAIN_PARTY_ADDRESS> 10000000uward --chain-id <CHAIN_ID> --node <RPC_URL>`
+
+## Fordefi
+
+An active fordefi account is required to bind the keychain.
+
+1. Create a Fordefi [API user](https://docs.fordefi.com/reference/authentication#create-an-api-user-and-token), save
+   it's access token. Note: API-User name will be used for the `FORDEFI_API_USER_NAME` environment variable of the
+   backend services.
+2. Setup [API Signer](https://docs.fordefi.com/reference/set-up-an-api-signer) and
+   [activate it](https://docs.fordefi.com/reference/activate-api-signer).
+3. [Pair API user with the API Signer](https://docs.fordefi.com/reference/pair-an-api-client-with-the-api-signer). You
+   will need to create public/private keys pair for that. From the Fordefi docs:
+
+   > **To create the private key using openSSL:**
+   >
+   > 1. Open a terminal and issue the following command:
+   >    `openssl ecparam -genkey -name prime256v1 -noout -out private.pem`
+   > 2. Extract the public key: `openssl ec -in private.pem -pubout`
+
+   > **To upload the API client public key:**
+   >
+   > 1. Open the API Signer and select Register API user key.
+   > 2. Select the API User from the list and press Enter.
+   > 3. Paste your public key and press Enter.
+   >
+   > The public key should be copied without spaces or new lines, as follows:
+
+   > `MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE5oTLGdLQBUHO1QUIGMNASIbsFu3RFKZThEAS2A4f3I9m1PjKszzVQDsBKX5SSm0aXlJQ5gNzYTDZTfBPVPtJfw==`
+
+4. Specify webhook URL in the [Fordefi webhooks settings.](https://docs.fordefi.com/reference/webhooks) Note: if using
+   multiple webhooks they will be calling in the order they were creating. To use multiple chains with single Fordefi
+   account use `message-handler` and `webhook` with the same `FORDEFI_API_USER_NAME` for single chain.
+5. `FORDEFI_CLIENT_PK` is the API user's private key from step 3.
+6. `WARDEN_SIGNER_MNEMONIC` is the private key of Keychain party account.
