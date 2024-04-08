@@ -87,6 +87,7 @@ Before deploying any new keychain operator you will need to create it on-chain.
    wardend keys add $KEYCHAIN_PARTY_NAME
    ```
 4. Add the address to the Keychain parties:
+
    `wardend tx warden add-keychain-party --keychain-id $KEYCHAIN_ID --party $KEYCHAIN_PARTY --from <keychain_admin_account> --chain-id wardenprotocol`
 
 ## Fordefi
