@@ -63,13 +63,13 @@ FORDEFI_API_USER_NAME=api-user-name
 
 # Deployment
 
-Before deploying any new keychain operator you will need to create it on-chain.
+Before deploying a new keychain operator, the corresponding keychain must be created in Warden blockchain.
 
-1. You will need to create keychain itself
+1. Create keychain itself
 
-   `wardend tx warden new-keychain --description 'Keychain name' --from <keychain_admin_account> --chain-id wardenprotocol`
+   `wardend tx warden new-keychain --description 'Keychain name' --from <KEYCHAIN_ADMIN_ACCOUNT> --chain-id wardenprotocol --node <RPC_URL>`
 
-2. Then query the Keychain ID
+2. Ensure the keychain has been created and export the keychain id to the KEYCHAIN_ID variable.
 
    ```
    wardend query warden keychains
@@ -80,26 +80,32 @@ Before deploying any new keychain operator you will need to create it on-chain.
    export KEYCHAIN_ID=2  # replace with the actual keychain ID
    ```
 
-3. Fund account that will be used as Keychain party. Account can be generated localy or created in wallet. Example for
+3. Fund account that will be used as Keychain party. Account can be generated localy or created in wallet. Make sure to
+   save the mnemonic of the created key as it will be used in environment variables of the backend services. Example for
    generating localy:
    ```
    export KEYCHAIN_PARTY_NAME=my-keychain-party
    wardend keys add $KEYCHAIN_PARTY_NAME
+   export KEYCHAIN_PARTY=$(wardend keys show -a $KEYCHAIN_PARTY_NAME)
    ```
-4. Add the address to the Keychain parties:
+4. Add the newly created keychain party to the keychain. It will be used by keychain operator to sign transactions.
 
-   `wardend tx warden add-keychain-party --keychain-id $KEYCHAIN_ID --party $KEYCHAIN_PARTY --from <keychain_admin_account> --chain-id wardenprotocol`
+   `wardend tx warden add-keychain-party --keychain-id $KEYCHAIN_ID --party $KEYCHAIN_PARTY --from <KEYCHAIN_ADMIN_ACCOUNT> --chain-id wardenprotocol`
+
+5. Top up the keychain party with WARD tokens.
+   `wardend tx bank send <FROM_ACCOUNT> <KEYCHAIN_PARTY_ADDRESS> 10000000uward --chain-id <CHAIN_ID> --node <RPC_URL>`
 
 ## Fordefi
 
 You will need an active fordefi account with which you will bind keychain.
 
 1. Create a Fordefi [API user](https://docs.fordefi.com/reference/authentication#create-an-api-user-and-token), save
-   it's access token. Note: API user name will be using for `FORDEFI_API_USER_NAME` setting so save it too.
+   it's access token. Note: API-User name will be used for the `FORDEFI_API_USER_NAME` environment variable of the
+   backend services.
 2. Setup [API Signer](https://docs.fordefi.com/reference/set-up-an-api-signer) and
    [activate it](https://docs.fordefi.com/reference/activate-api-signer).
 3. [Pair API user with the API Signer](https://docs.fordefi.com/reference/pair-an-api-client-with-the-api-signer). You
-   will need to create public/private keys pair for that. From Fordefi docs:
+   will need to create public/private keys pair for that. From the Fordefi docs:
 
    > **To create the private key using openSSL:**
    >
@@ -117,8 +123,8 @@ You will need an active fordefi account with which you will bind keychain.
 
    > `MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE5oTLGdLQBUHO1QUIGMNASIbsFu3RFKZThEAS2A4f3I9m1PjKszzVQDsBKX5SSm0aXlJQ5gNzYTDZTfBPVPtJfw==`
 
-4. [Add webhook](https://docs.fordefi.com/reference/webhooks) URL into settings. Note: if using multiple webhooks they
-   will be calling in the order they were creating. To use multiple chains with single Fordefi account use
-   `message-handler` and `webhook` with the same `FORDEFI_API_USER_NAME` for single chain.
+4. Specify webhook URL in the [Fordefi webhooks settings.](https://docs.fordefi.com/reference/webhooks) Note: if using
+   multiple webhooks they will be calling in the order they were creating. To use multiple chains with single Fordefi
+   account use `message-handler` and `webhook` with the same `FORDEFI_API_USER_NAME` for single chain.
 5. `FORDEFI_CLIENT_PK` is the API user's private key from step 3.
 6. `WARDEN_SIGNER_MNEMONIC` is the private key of Keychain party account.
