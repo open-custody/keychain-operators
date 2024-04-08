@@ -1,0 +1,103 @@
+name: "ALFAMA deploy WEBHOOKS"
+
+on:
+  push:
+    branches:
+      - release/alfama
+  workflow_dispatch:
+
+env:
+  APP_NAME: "webhooks"
+  MAIN_APP_NAME: "warden-keychain-operators"
+  REGISTRY: ${{ vars.REGISTRY }}
+  NAMESPACE: alfama
+  LIMIT_CPU: "500m"
+  LIMIT_MEMORY: "512Mi"
+
+jobs:
+  build-image-app:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    outputs:
+        output_tag: ${{ steps.tag_env.outputs.tag }}
+    steps:
+    
+      - uses: actions/checkout@v4
+      - uses: aws-actions/configure-aws-credentials@v4.0.1
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE }}
+          aws-region: ${{ vars.AWS_REGION }}
+      - uses: aws-actions/amazon-ecr-login@v2
+        id: login-ecr
+        
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{ vars.REGISTRY }}/${{ env.APP_NAME }}
+          tags: |
+            type=ref,enable=true,priority=600,prefix=,suffix=-{{date 'YYYYMMDD'}}-{{sha}},event=branch
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'deploy') }}
+            
+      - id: tag_env
+        run: echo "tag=${{ env.DOCKER_METADATA_OUTPUT_VERSION }}"  >> $GITHUB_OUTPUT
+
+      - name: Build and push
+        uses: docker/build-push-action@v4
+        with:
+          build-args: |
+            NEXT_PUBLIC_BUILD_NUMBER_ARG=${{ github.sha }}
+            BUILD_CONTEXT=${{ env.APP_NAME }}
+          target: ${{ env.APP_NAME }}
+          context: .
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+  deployment-app:
+    needs: build-image-app
+    runs-on: 'ubuntu-latest'
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE }}
+          aws-region: eu-west-1
+      - uses: aws-actions/amazon-ecr-login@v2
+        id: login-ecr
+      - name: 'Clone Helm repository'
+        uses: actions/checkout@v3
+        with:
+          repository: ${{ vars.HELM_REPOSITORY }}
+          ref: 'main'
+          token: ${{ secrets.PAT }}
+      - name: 'Prep extraEnv'
+        run: |
+            cat <<EOF > extraEnv.yml
+            ${{ secrets.ALFAMA_WEBHOOKS_EXTRAENV }}
+            EOF
+      - name: Update kube config
+        run: aws eks update-kubeconfig --name ${{ vars.CLUSTER_NAME }} --region $AWS_REGION
+      - uses: azure/setup-helm@v3
+        with:
+          version: 'v3.12.0'
+      - name: Deploy to EKS
+        run: |
+          helm upgrade \
+           -i ${{ env.APP_NAME }}-${{ env.MAIN_APP_NAME }} \
+           -n ${{ env.NAMESPACE }} \
+           --set nameOverride=${{ env.APP_NAME }}-${{ env.MAIN_APP_NAME }} \
+           --set image.repository=${{ env.REGISTRY }}  \
+           --set image.name=${{ env.APP_NAME }} \
+           --set image.tag=${{ needs.build-image-app.outputs.output_tag }} \
+           --set resources.limits.cpu=${{ env.LIMIT_CPU }} \
+           --set resources.limits.memory=${{ env.LIMIT_MEMORY }} \
+           -f extraEnv.yml \
+           ./charts/${{ env.MAIN_APP_NAME }}/${{ env.APP_NAME }}/
+
