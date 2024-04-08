@@ -1,4 +1,4 @@
-import { delay } from '@warden/utils';
+import { delay, logError } from '@warden/utils';
 
 export abstract class Processor<T> {
   constructor(
@@ -19,7 +19,7 @@ export abstract class Processor<T> {
           }
         }
       } catch (error) {
-        console.error(error);
+        logError(error);
 
         await delay(5_000);
       }

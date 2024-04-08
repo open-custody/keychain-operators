@@ -1,6 +1,7 @@
 import { WardenService } from '@warden/blockchain-library';
 import { FordefiService } from '@warden/fordefi-library';
 import { KeyProvider, MessageBrokerConsumer } from '@warden/message-broker-library';
+import { logError } from '@warden/utils';
 import 'dotenv/config';
 
 import { config } from './config';
@@ -80,5 +81,5 @@ export async function main(): Promise<void> {
 }
 
 main()
-  .catch(console.error)
+  .catch((e) => logError(e))
   .finally(() => process.exit());

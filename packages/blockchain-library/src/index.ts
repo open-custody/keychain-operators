@@ -1,6 +1,6 @@
 import { DirectSecp256k1HdWallet, Registry } from '@cosmjs/proto-signing';
 import { SigningStargateClient } from '@cosmjs/stargate';
-import { delay } from '@warden/utils';
+import { delay, logError, logInfo } from '@warden/utils';
 import { cosmosProtoRegistry, warden, wardenProtoRegistry } from '@wardenprotocol/wardjs';
 import { PageRequest } from '@wardenprotocol/wardjs/dist/codegen/cosmos/base/query/v1beta1/pagination';
 import { KeyRequest, KeyRequestStatus } from '@wardenprotocol/wardjs/dist/codegen/warden/warden/v1beta2/key';
@@ -55,11 +55,11 @@ export class WardenService {
     while (true) {
       await delay(this.configuration.pollingIntervalMsec);
 
-      console.log(`Keys in cache: ${this.keys.size}`);
+      logInfo(`Keys in cache: ${this.keys.size}`);
 
       for (const [id, retiredAt] of this.keys) {
         const now = new Date().getTime();
-        const request = await this.getKeyRequest(id).catch(console.error);
+        const request = await this.getKeyRequest(id).catch((e) => logError(e));
 
         if ((!!request && request.status !== KeyRequestStatus.KEY_REQUEST_STATUS_PENDING) || retiredAt < now) {
           this.keys.delete(id);
@@ -75,7 +75,7 @@ export class WardenService {
           }),
         )
         .then((x) => x.keyRequests)
-        .catch(console.error);
+        .catch((e) => logError(e));
 
       if (!pendingKeys || pendingKeys.length === 0) continue;
 
@@ -102,11 +102,11 @@ export class WardenService {
     while (true) {
       await delay(this.configuration.pollingIntervalMsec);
 
-      console.log(`Signatures in cache: ${this.signatures.size}`);
+      logInfo(`Signatures in cache: ${this.signatures.size}`);
 
       for (const [id, retiredAt] of this.signatures) {
         const now = new Date().getTime();
-        const request = await this.getSignatureRequest(id).catch(console.error);
+        const request = await this.getSignatureRequest(id).catch((e) => logError(e));
 
         if ((!!request && request.status !== SignRequestStatus.SIGN_REQUEST_STATUS_PENDING) || retiredAt < now) {
           this.signatures.delete(id);
@@ -122,7 +122,7 @@ export class WardenService {
           }),
         )
         .then((x) => x.signRequests)
-        .catch(console.error);
+        .catch((e) => logError(e));
 
       if (!pendingSignatures || pendingSignatures.length === 0) continue;
 
@@ -139,7 +139,7 @@ export class WardenService {
             deriveWallets: [],
           })
           .then((x) => x.key)
-          .catch(console.error);
+          .catch((e) => logError(e));
 
         if (!key) continue;
 
@@ -254,7 +254,7 @@ export class WardenService {
     return await query
       .keyRequestById({ id: requestId })
       .then((x) => x.keyRequest)
-      .catch(console.error);
+      .catch((e) => logError(e));
   }
 
   async getSignatureRequest(requestId: bigint): Promise<void | SignRequest> {
@@ -263,7 +263,7 @@ export class WardenService {
     return await query
       .signatureRequestById({ id: requestId })
       .then((x) => x.signRequest)
-      .catch(console.error);
+      .catch((e) => logError(e));
   }
 }
 

@@ -1,5 +1,6 @@
 import { INewSignatureRequest } from '@warden/blockchain-library';
 import { INewSignatureRequestMessage, KeyProvider, MessageBrokerProducer } from '@warden/message-broker-library';
+import { logError, logInfo } from '@warden/utils';
 
 import { Processor } from './processor';
 
@@ -14,10 +15,8 @@ export class NewSignatureProcessor extends Processor<INewSignatureRequest> {
   }
 
   async handle(data: INewSignatureRequest): Promise<boolean> {
-    const log = `(id: ${data.id}, provider: ${this.provider}, creator: ${data.creator}, keychain: ${data.keychainId})`;
-
     try {
-      console.log(`New Signature request ${log}`);
+      logInfo(`New Signature request ${JSON.stringify(data)}`);
 
       return this.producer.publish<INewSignatureRequestMessage>({
         provider: this.provider,
@@ -28,7 +27,7 @@ export class NewSignatureProcessor extends Processor<INewSignatureRequest> {
         signingData: Buffer.from(data.signingData).toString('base64'),
       });
     } catch (error) {
-      console.error(`New Signature error ${log}: . Message: ${error}`);
+      logError(`New Signature error ${JSON.stringify(data)}. Error: ${error}`);
 
       return false;
     }
