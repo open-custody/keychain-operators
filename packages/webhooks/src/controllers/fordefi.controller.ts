@@ -10,8 +10,7 @@ export class AppController {
   constructor(private readonly fordefiWebhookService: FordefiWebhookService) {}
 
   @Post('/fordefi/signature')
-  @UseGuards(SignatureGuard)
-  @UseGuards(ApiUserGuard)
+  @UseGuards(SignatureGuard, ApiUserGuard)
   async handleFordefiSignature(@Body() fordefiWebhookEvent: FordefiWebhookEvent) {
     await this.fordefiWebhookService.handle(fordefiWebhookEvent);
   }
