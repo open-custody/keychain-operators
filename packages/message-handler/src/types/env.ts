@@ -18,5 +18,4 @@ export interface Env {
   FORDEFI_CLIENT_PK: string;
   FORDEFI_API_ENDPOINT: string;
   FORDEFI_UUIDV5_NAMESPACE: string;
-  FORDEFI_API_USER_NAME: string;
 }

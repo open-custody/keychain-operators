@@ -14,7 +14,6 @@ export class FordefiKeychainHandler implements IKeychainHandler {
   constructor(
     private fordefi: FordefiService,
     private uuidV5Namespace: string,
-    private fordefiApiUserName: string,
   ) {}
 
   async createKey(data: INewKeyRequestMessage): Promise<Buffer> {
@@ -54,7 +53,7 @@ export class FordefiKeychainHandler implements IKeychainHandler {
 
     const result = await this.fordefi.createBlackBoxSignatureRequest(
       {
-        note: `cr_${data.creator}-srq-${data.requestId}-${this.fordefiApiUserName}`,
+        note: `cr_${data.creator}-srq-${data.requestId}`,
         signer_type: 'api_signer',
         type: 'black_box_signature',
         vault_id: vault.id,
