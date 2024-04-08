@@ -3,7 +3,7 @@ name: "DEV deploy BLOCKCHAIN_LISTENER"
 on:
   push:
     branches:
-      - stage
+      - release/devnet
   workflow_dispatch:
 
 env:

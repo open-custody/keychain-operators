@@ -3,7 +3,7 @@ name: "DEV deploy WEBHOOKS"
 on:
   push:
     branches:
-      - stage
+      - release/devnet
   workflow_dispatch:
 
 env:
