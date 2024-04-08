@@ -19,12 +19,14 @@ export class NewSignatureProcessor extends Processor<INewSignatureRequestMessage
   }
 
   async handle(data: INewSignatureRequestMessage, attempts: number): Promise<boolean> {
-    logInfo(`New Signature message ${JSON.stringify(data)}`);
+    const log = `provider: ${data.provider}, id: ${data.requestId}, creator: ${data.creator}, keychain: ${data.keychainId}`;
+
+    logInfo(`New Signature message (${log})`);
 
     const requestId = BigInt(data.requestId);
 
     if (attempts === 0) {
-      logError(`New Signature message error after ${this.retryAttempts} attempts: ${JSON.stringify(data)}`);
+      logError(`New Signature message error after ${this.retryAttempts} attempts: ${log}`);
 
       return await this.reject(requestId, `Failed to sign a message`);
     }

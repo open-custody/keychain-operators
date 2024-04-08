@@ -18,12 +18,14 @@ export class SignatureStatusProcessor extends Processor<ISignatureStatusMessage>
   }
 
   async handle(data: ISignatureStatusMessage, attempts: number): Promise<boolean> {
-    logInfo(`New Signature Status message ${JSON.stringify(data)}`);
+    const log = `provider: ${data.provider}, id: ${data.keyProviderRequestId}, creator: ${data.creator}, request: ${data.requestId}`;
+
+    logInfo(`New Signature Status message (${log})`);
 
     const requestId = BigInt(data.requestId);
 
     if (attempts === 0) {
-      logError(`New Signature Status message error after ${this.retryAttempts} attempts: ${JSON.stringify(data)}`);
+      logError(`New Signature Status message error after ${this.retryAttempts} attempts: ${log}`);
 
       return await this.reject(requestId, 'Failed to fulfil signature request');
     }

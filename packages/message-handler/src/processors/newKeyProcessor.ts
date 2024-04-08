@@ -18,12 +18,14 @@ export class NewKeyProcessor extends Processor<INewKeyRequestMessage> {
   }
 
   async handle(data: INewKeyRequestMessage, attempts: number): Promise<boolean> {
-    logInfo(`New Key message ${JSON.stringify(data)}`);
+    const log = `provider: ${data.provider}, id: ${data.requestId}, creator: ${data.creator}, keychain: ${data.keychainId}, space: ${data.spaceId}`;
+
+    logInfo(`New Key message (${log})`);
 
     const requestId = BigInt(data.requestId);
 
     if (attempts === 0) {
-      logError(`New Key message error after ${this.retryAttempts} attempts: ${JSON.stringify(data)}`);
+      logError(`New Key message error after ${this.retryAttempts} attempts: ${log}`);
 
       return await this.reject(requestId, `Failed to create a new key`);
     }
