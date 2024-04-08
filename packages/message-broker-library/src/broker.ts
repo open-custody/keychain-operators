@@ -1,4 +1,4 @@
-import { delay } from '@warden/utils';
+import { delay, logError } from '@warden/utils';
 import { Channel, Connection, connect } from 'amqplib';
 
 import { IMessageBrokerConfiguration } from './types/configuration';
@@ -16,13 +16,13 @@ export abstract class MessageBroker {
     await connect(this.configuration.connectionString)
       .then(async (connection) => {
         connection.once('error', async (error) => {
-          console.error(error);
+          logError(error);
 
-          connection.close().catch(console.error);
+          await connection.close().catch((e) => logError(e));
         });
 
         connection.once('close', async (error) => {
-          console.error(error);
+          logError(error);
 
           await delay(this.configuration.reconnectMsec);
           await this.initConnection();
@@ -32,7 +32,7 @@ export abstract class MessageBroker {
       })
       .then(async (_) => await this.initChannel())
       .catch(async (error) => {
-        console.error(error);
+        logError(error);
 
         await delay(this.configuration.reconnectMsec);
         await this.initConnection();
@@ -44,13 +44,13 @@ export abstract class MessageBroker {
       .createChannel()
       .then(async (channel) => {
         channel.once('error', async (error) => {
-          console.error(error);
+          logError(error);
 
-          await channel.close().catch(console.error);
+          await channel.close().catch((e) => logError(e));
         });
 
         channel.once('close', async (error) => {
-          console.error(error);
+          logError(error);
 
           await delay(this.configuration.reconnectMsec);
           await this.initConnection();
@@ -61,7 +61,7 @@ export abstract class MessageBroker {
         await channel.assertQueue(this.configuration.queue, { durable: true });
       })
       .catch(async (error) => {
-        console.error(error);
+        logError(error);
 
         await delay(this.configuration.reconnectMsec);
         await this.initConnection();
