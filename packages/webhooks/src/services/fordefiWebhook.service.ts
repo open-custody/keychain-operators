@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ISignatureStatusMessage, KeyProvider, MessageBrokerProducer } from '@warden/message-broker-library';
-import { logInfo } from '@warden/utils';
+import { logInfo, serialize } from '@warden/utils';
 
 import { TOKEN as messageProducerToken } from '../infrastructure/messageBroker.provider';
 import { FordefiWebhookEvent } from '../models/fordefi.webhook.event';
@@ -11,7 +11,7 @@ export class FordefiWebhookService {
   constructor(@Inject(messageProducerToken) private producer: MessageBrokerProducer) {}
 
   async handle(event: FordefiWebhookEvent) {
-    logInfo(`New transaction event: ${JSON.stringify(event)}`);
+    logInfo(`New transaction event: ${serialize(event)}`);
 
     const fordefiSignatureState = event.event.state;
 

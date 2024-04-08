@@ -1,6 +1,6 @@
 import { WardenService } from '@warden/blockchain-library';
 import { INewKeyRequestMessage, KeyProvider, MessageBrokerConsumer } from '@warden/message-broker-library';
-import { logError, logInfo } from '@warden/utils';
+import { logError, logInfo, serialize } from '@warden/utils';
 import { KeyRequestStatus } from '@wardenprotocol/wardjs/dist/codegen/warden/warden/v1beta2/key';
 
 import { IKeychainHandler } from '../keychains/keychainHandler';
@@ -18,12 +18,12 @@ export class NewKeyProcessor extends Processor<INewKeyRequestMessage> {
   }
 
   async handle(data: INewKeyRequestMessage, attempts: number): Promise<boolean> {
-    logInfo(`New Key message ${JSON.stringify(data)}`);
+    logInfo(`New Key message ${serialize(data)}`);
 
     const requestId = BigInt(data.requestId);
 
     if (attempts === 0) {
-      logError(`New Key message error after ${this.retryAttempts} attempts: ${JSON.stringify(data)}`);
+      logError(`New Key message error after ${this.retryAttempts} attempts: ${serialize(data)}`);
 
       return await this.reject(requestId, `Failed to create a new key`);
     }
