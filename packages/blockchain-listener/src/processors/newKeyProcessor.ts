@@ -14,8 +14,10 @@ export class NewKeyProcessor extends Processor<INewKeyRequest> {
   }
 
   async handle(data: INewKeyRequest): Promise<boolean> {
+    const log = `(id: ${data.id}, provider: ${this.provider}, creator: ${data.creator}, keychain: ${data.keychainId})`;
+
     try {
-      console.log(`New Key request: ${data.id}`);
+      console.log(`New Key request ${log}`);
 
       return this.producer.publish<INewKeyRequestMessage>({
         provider: this.provider,
@@ -25,7 +27,7 @@ export class NewKeyProcessor extends Processor<INewKeyRequest> {
         spaceId: data.spaceId.toString(),
       });
     } catch (error) {
-      console.error(error);
+      console.error(`New key error ${log}: . Message: ${error}`);
 
       return false;
     }

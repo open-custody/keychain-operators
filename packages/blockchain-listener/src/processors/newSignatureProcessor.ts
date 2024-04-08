@@ -14,8 +14,10 @@ export class NewSignatureProcessor extends Processor<INewSignatureRequest> {
   }
 
   async handle(data: INewSignatureRequest): Promise<boolean> {
+    const log = `(id: ${data.id}, provider: ${this.provider}, creator: ${data.creator}, keychain: ${data.keychainId})`;
+
     try {
-      console.log(`New Signature request: ${data.id}`);
+      console.log(`New Signature request ${log}`);
 
       return this.producer.publish<INewSignatureRequestMessage>({
         provider: this.provider,
@@ -26,7 +28,7 @@ export class NewSignatureProcessor extends Processor<INewSignatureRequest> {
         signingData: Buffer.from(data.signingData).toString('base64'),
       });
     } catch (error) {
-      console.error(error);
+      console.error(`New Signature error ${log}: . Message: ${error}`);
 
       return false;
     }
