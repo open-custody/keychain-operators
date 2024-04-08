@@ -1,17 +1,19 @@
 import { WardenService } from '@warden/blockchain-library';
 import { MessageBrokerConsumer } from '@warden/message-broker-library';
-import { delay } from '@warden/utils';
+import { delay, logError } from '@warden/utils';
 
 export abstract class Processor<T> {
   warden: WardenService;
+  retryAttempts: number;
 
   constructor(
     warden: WardenService,
     private consumer: MessageBrokerConsumer,
     private prefetch: number,
-    private retryAttempts: number,
+    retryAttempts: number,
   ) {
     this.warden = warden;
+    this.retryAttempts = retryAttempts;
   }
 
   async start(): Promise<void> {
@@ -22,7 +24,7 @@ export abstract class Processor<T> {
         try {
           return await this.handle(message, attempts);
         } catch (error) {
-          console.error(error);
+          logError(`Error while handling the message: ${JSON.stringify(message)}. Error: ${error}`);
         } finally {
           attempts--;
         }

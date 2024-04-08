@@ -1,5 +1,6 @@
 import { WardenService } from '@warden/blockchain-library';
 import { INewSignatureRequestMessage, KeyProvider, MessageBrokerConsumer } from '@warden/message-broker-library';
+import { logError, logInfo } from '@warden/utils';
 import { SignRequestStatus } from '@wardenprotocol/wardjs/dist/codegen/warden/warden/v1beta2/signature';
 
 import { IKeychainHandler } from '../keychains/keychainHandler';
@@ -18,11 +19,13 @@ export class NewSignatureProcessor extends Processor<INewSignatureRequestMessage
   }
 
   async handle(data: INewSignatureRequestMessage, attempts: number): Promise<boolean> {
-    console.log(`New Signature message: ${data.requestId}`);
+    logInfo(`New Signature message ${JSON.stringify(data)}`);
 
     const requestId = BigInt(data.requestId);
 
     if (attempts === 0) {
+      logError(`New Signature message error after ${this.retryAttempts} attempts: ${JSON.stringify(data)}`);
+
       return await this.reject(requestId, `Failed to sign a message`);
     }
 
