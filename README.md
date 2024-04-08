@@ -80,9 +80,8 @@ Before deploying a new keychain operator, the corresponding keychain must be cre
    export KEYCHAIN_ID=2  # replace with the actual keychain ID
    ```
 
-3. Fund account that will be used as Keychain party. Account can be generated localy or created in wallet. Make sure to
-   save the mnemonic of the created key as it will be used in environment variables of the backend services. Example for
-   generating localy:
+3. Account can be generated localy or created in wallet. Make sure to save the mnemonic of the created key as it will be
+   used in environment variables of the backend services. Example for generating localy:
    ```
    export KEYCHAIN_PARTY_NAME=my-keychain-party
    wardend keys add $KEYCHAIN_PARTY_NAME
@@ -97,7 +96,7 @@ Before deploying a new keychain operator, the corresponding keychain must be cre
 
 ## Fordefi
 
-You will need an active fordefi account with which you will bind keychain.
+An active fordefi account is required to bind the keychain.
 
 1. Create a Fordefi [API user](https://docs.fordefi.com/reference/authentication#create-an-api-user-and-token), save
    it's access token. Note: API-User name will be used for the `FORDEFI_API_USER_NAME` environment variable of the
