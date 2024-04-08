@@ -54,7 +54,10 @@ export async function main(): Promise<void> {
   await signatureStatusConsumer.initChannel();
 
   const handlers = new Map<KeyProvider, IKeychainHandler>([
-    [KeyProvider.Fordefi, new FordefiKeychainHandler(fordefi, config.FORDEFI_UUIDV5_NAMESPACE)],
+    [
+      KeyProvider.Fordefi,
+      new FordefiKeychainHandler(fordefi, config.FORDEFI_UUIDV5_NAMESPACE, config.FORDEFI_API_USER_NAME),
+    ],
   ]);
 
   const newFordefiKeyRequestProcess = new NewKeyProcessor(
