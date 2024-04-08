@@ -11,7 +11,7 @@ export class FordefiWebhookService {
 
   async handle(fordefiWebhookEvent: FordefiWebhookEvent) {
     console.log(
-      `New transaction event - ${fordefiWebhookEvent.event_id}, attempt: ${fordefiWebhookEvent.attempt}, event: ${JSON.stringify(fordefiWebhookEvent.event)}, created at: ${fordefiWebhookEvent.created_at}, now: ${new Date().toUTCString()}`,
+      `New transaction event - ${fordefiWebhookEvent.event_id}, attempt: ${fordefiWebhookEvent.attempt}, event: ${JSON.stringify(fordefiWebhookEvent.event)}, created at: ${fordefiWebhookEvent.created_at}, now: ${Date.now()}`,
     );
 
     const fordefiSignatureState = fordefiWebhookEvent.event.state;
