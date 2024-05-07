@@ -14,7 +14,7 @@
   "dependencies": {
     "@cosmjs/proto-signing": "^0.32.3",
     "@warden/utils": "1.0.0",
-    "@wardenprotocol/wardjs": "^0.0.1"
+    "@wardenprotocol/wardenjs": "^0.0.4"
   },
   "devDependencies": {
     "react": "^18.2.0",

@@ -1,7 +1,7 @@
 import { WardenService } from '@warden/blockchain-library';
 import { INewKeyRequestMessage, KeyProvider, MessageBrokerConsumer } from '@warden/message-broker-library';
 import { logError, logInfo, serialize } from '@warden/utils';
-import { KeyRequestStatus } from '@wardenprotocol/wardjs/dist/codegen/warden/warden/v1beta2/key';
+import { KeyRequestStatus } from '@wardenprotocol/wardenjs/dist/codegen/warden/warden/v1beta2/key';
 
 import { IKeychainHandler } from '../keychains/keychainHandler';
 import { Processor } from './processor';
