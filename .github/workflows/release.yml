@@ -50,6 +50,5 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            SERVICE=${{ inputs.service_name }}
-            COMMIT=${{ steps.meta.sha }}
-            VERSION=${{ steps.meta.semver }}
+            NEXT_PUBLIC_BUILD_NUMBER_ARG=${{ steps.meta.sha }}
+            BUILD_CONTEXT=${{ inputs.service_name }}
