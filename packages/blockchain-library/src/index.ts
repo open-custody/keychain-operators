@@ -1,14 +1,15 @@
 import { DirectSecp256k1HdWallet, Registry } from '@cosmjs/proto-signing';
 import { SigningStargateClient } from '@cosmjs/stargate';
 import { delay, logError, logInfo } from '@warden/utils';
-import { cosmosProtoRegistry, warden, wardenProtoRegistry } from '@wardenprotocol/wardjs';
-import { PageRequest } from '@wardenprotocol/wardjs/dist/codegen/cosmos/base/query/v1beta1/pagination';
-import { KeyRequest, KeyRequestStatus } from '@wardenprotocol/wardjs/dist/codegen/warden/warden/v1beta2/key';
+import { cosmosProtoRegistry, warden, wardenProtoRegistry } from '@wardenprotocol/wardenjs';
+import { PageRequest } from '@wardenprotocol/wardenjs/dist/codegen/cosmos/base/query/v1beta1/pagination';
+import { KeyRequest, KeyRequestStatus } from '@wardenprotocol/wardenjs/dist/codegen/warden/warden/v1beta2/key';
 import {
   QueryKeyRequestsRequest,
   QuerySignatureRequestsRequest,
-} from '@wardenprotocol/wardjs/dist/codegen/warden/warden/v1beta2/query';
-import { SignRequest, SignRequestStatus } from '@wardenprotocol/wardjs/dist/codegen/warden/warden/v1beta2/signature';
+} from '@wardenprotocol/wardenjs/dist/codegen/warden/warden/v1beta2/query';
+import { SignRequest, SignRequestStatus } from '@wardenprotocol/wardenjs/dist/codegen/warden/warden/v1beta2/signature';
+import Long from 'long';
 
 import { IWardenConfiguration } from './types/configuration';
 import { INewKeyRequest } from './types/newKeyRequest';
@@ -69,9 +70,9 @@ export class WardenService {
       const pendingKeys = await query
         .keyRequests(
           QueryKeyRequestsRequest.fromPartial({
-            keychainId: keychainId,
+            keychainId: Long.fromString(keychainId.toString(10)),
             status: KeyRequestStatus.KEY_REQUEST_STATUS_PENDING,
-            pagination: PageRequest.fromPartial({ limit: BigInt(100) }),
+            pagination: PageRequest.fromPartial({ limit: Long.fromNumber(100) }),
           }),
         )
         .then((x) => x.keyRequests)
@@ -82,14 +83,14 @@ export class WardenService {
       for (let i = 0; i < +pendingKeys.length; i++) {
         const key = pendingKeys[i];
 
-        if (this.keys.has(key.id)) continue;
+        if (this.keys.has(longToBigInt(key.id))) continue;
 
-        this.keys.set(key.id, new Date().getTime() + keyRetentionMsec);
+        this.keys.set(BigInt(key.id.toString(10)), new Date().getTime() + keyRetentionMsec);
 
         yield {
-          id: key.id,
-          keychainId: key.keychainId,
-          spaceId: key.spaceId,
+          id: longToBigInt(key.id),
+          keychainId: longToBigInt(key.keychainId),
+          spaceId: longToBigInt(key.spaceId),
           creator: key.creator,
         };
       }
@@ -116,9 +117,9 @@ export class WardenService {
       const pendingSignatures = await query
         .signatureRequests(
           QuerySignatureRequestsRequest.fromPartial({
-            keychainId: keychainId,
+            keychainId: bigintToLong(keychainId),
             status: SignRequestStatus.SIGN_REQUEST_STATUS_PENDING,
-            pagination: PageRequest.fromPartial({ limit: BigInt(100) }),
+            pagination: PageRequest.fromPartial({ limit: Long.fromNumber(100) }),
           }),
         )
         .then((x) => x.signRequests)
@@ -129,14 +130,14 @@ export class WardenService {
       for (let i = 0; i < +pendingSignatures.length; i++) {
         const request = pendingSignatures[i];
 
-        if (this.signatures.has(request.id)) continue;
+        if (this.signatures.has(longToBigInt(request.id))) continue;
 
-        this.signatures.set(request.id, new Date().getTime() + keyRetentionMsec);
+        this.signatures.set(longToBigInt(request.id), new Date().getTime() + keyRetentionMsec);
 
         const key = await query
           .keyById({
             id: request.keyId,
-            deriveWallets: [],
+            deriveAddresses: [],
           })
           .then((x) => x.key)
           .catch((e) => logError(e));
@@ -144,7 +145,7 @@ export class WardenService {
         if (!key) continue;
 
         yield {
-          id: request.id,
+          id: longToBigInt(request.id),
           publicKey: key.publicKey,
           keychainId: keychainId,
           creator: request.creator,
@@ -159,7 +160,7 @@ export class WardenService {
 
     const message = updateKeyRequest({
       creator: signer.account,
-      requestId: requestId,
+      requestId: bigintToLong(requestId),
       key: { publicKey: publicKey },
       status: KeyRequestStatus.KEY_REQUEST_STATUS_FULFILLED,
     });
@@ -182,7 +183,7 @@ export class WardenService {
 
     const message = fulfilSignatureRequest({
       creator: signer.account,
-      requestId: requestId,
+      requestId: bigintToLong(requestId),
       status: SignRequestStatus.SIGN_REQUEST_STATUS_FULFILLED,
       payload: {
         signedData: signedData,
@@ -207,7 +208,7 @@ export class WardenService {
 
     const message = updateKeyRequest({
       creator: signer.account,
-      requestId: requestId,
+      requestId: bigintToLong(requestId),
       status: KeyRequestStatus.KEY_REQUEST_STATUS_REJECTED,
       rejectReason: reason,
     });
@@ -230,7 +231,7 @@ export class WardenService {
 
     const message = fulfilSignatureRequest({
       creator: signer.account,
-      requestId: requestId,
+      requestId: bigintToLong(requestId),
       status: SignRequestStatus.SIGN_REQUEST_STATUS_REJECTED,
       rejectReason: reason,
     });
@@ -252,7 +253,7 @@ export class WardenService {
     const query = (await this.query()).warden.warden.v1beta2;
 
     return await query
-      .keyRequestById({ id: requestId })
+      .keyRequestById({ id: bigintToLong(requestId) })
       .then((x) => x.keyRequest)
       .catch((e) => logError(e));
   }
@@ -261,10 +262,18 @@ export class WardenService {
     const query = (await this.query()).warden.warden.v1beta2;
 
     return await query
-      .signatureRequestById({ id: requestId })
+      .signatureRequestById({ id: bigintToLong(requestId) })
       .then((x) => x.signRequest)
       .catch((e) => logError(e));
   }
+}
+
+function longToBigInt(value: Long) {
+  return BigInt(value.toString(10));
+}
+
+function bigintToLong(value: bigint) {
+  return Long.fromString(value.toString(10));
 }
 
 export { INewKeyRequest } from './types/newKeyRequest';
