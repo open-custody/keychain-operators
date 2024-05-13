@@ -1,14 +1,14 @@
 import { DirectSecp256k1HdWallet, Registry } from '@cosmjs/proto-signing';
 import { SigningStargateClient } from '@cosmjs/stargate';
-import { delay, logError, logInfo } from '@warden/utils';
+import * as utils from '@warden/utils';
 import { cosmosProtoRegistry, warden, wardenProtoRegistry } from '@wardenprotocol/wardenjs';
-import { PageRequest } from '@wardenprotocol/wardenjs/dist/codegen/cosmos/base/query/v1beta1/pagination';
-import { KeyRequest, KeyRequestStatus } from '@wardenprotocol/wardenjs/dist/codegen/warden/warden/v1beta2/key';
+import { PageRequest } from '@wardenprotocol/wardenjs/codegen/cosmos/base/query/v1beta1/pagination';
+import { KeyRequest, KeyRequestStatus } from '@wardenprotocol/wardenjs/codegen/warden/warden/v1beta2/key';
 import {
   QueryKeyRequestsRequest,
   QuerySignatureRequestsRequest,
-} from '@wardenprotocol/wardenjs/dist/codegen/warden/warden/v1beta2/query';
-import { SignRequest, SignRequestStatus } from '@wardenprotocol/wardenjs/dist/codegen/warden/warden/v1beta2/signature';
+} from '@wardenprotocol/wardenjs/codegen/warden/warden/v1beta2/query';
+import { SignRequest, SignRequestStatus } from '@wardenprotocol/wardenjs/codegen/warden/warden/v1beta2/signature';
 import Long from 'long';
 
 import { IWardenConfiguration } from './types/configuration';
@@ -17,6 +17,7 @@ import { INewSignatureRequest } from './types/newSignatureRequest';
 import { ISigner } from './types/signer';
 import { ITransactionState } from './types/transactionState';
 
+const { delay, logError, logInfo } = utils;
 const { createRPCQueryClient } = warden.ClientFactory;
 const { updateKeyRequest, fulfilSignatureRequest } = warden.warden.v1beta2.MessageComposer.withTypeUrl;
 
