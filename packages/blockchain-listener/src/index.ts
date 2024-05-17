@@ -29,8 +29,8 @@ export async function main(): Promise<void> {
     reconnectMsec: config.BROKER_RECONNECT_MSEC,
   });
 
-  // await newKeyRequestProducer.initConnection();
-  // await newSignatureRequestProducer.initConnection();
+  await newKeyRequestProducer.initConnection();
+  await newSignatureRequestProducer.initConnection();
 
   const newFordefiKeyRequestProcess = new NewKeyProcessor(
     BigInt(config.WARDEN_FORDEFI_KEYCHAIN_ID),
