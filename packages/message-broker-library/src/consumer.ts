@@ -1,7 +1,7 @@
 import { logError } from '@warden/utils';
 
-import { MessageBroker } from './broker';
-import { IMessageBrokerConsumerConfiguration } from './types/configuration';
+import { MessageBroker } from './broker.js';
+import { IMessageBrokerConsumerConfiguration } from './types/configuration.js';
 
 export class MessageBrokerConsumer extends MessageBroker {
   async consume<T>(

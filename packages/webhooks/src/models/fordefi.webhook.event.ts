@@ -1,7 +1,7 @@
 import { Type } from 'class-transformer';
 import { IsNotEmpty, Matches, ValidateNested } from 'class-validator';
 
-import { FORDEFI_NOTE_REGEX } from '../validation/regex';
+import { FORDEFI_NOTE_REGEX } from '../validation/regex.js';
 
 export class WebhookBlackBoxSignatureStatusChangeEvent {
   /** The unique identifier of the object in the Fordefi platform. */

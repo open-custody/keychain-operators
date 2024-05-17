@@ -1,5 +1,4 @@
-import { FordefiService } from '@warden/fordefi-library';
-import { Vault } from '@warden/fordefi-library/dist/types/vault/vault';
+import { FordefiService, Vault } from '@warden/fordefi-library';
 import {
   INewKeyRequestMessage,
   INewSignatureRequestMessage,
@@ -7,8 +6,8 @@ import {
 } from '@warden/message-broker-library';
 import { uuid } from '@warden/utils';
 
-import { ISignatureResult, SignatureResultStatus } from '../types/signResult';
-import { IKeychainHandler } from './keychainHandler';
+import { ISignatureResult, SignatureResultStatus } from '../types/signResult.js';
+import { IKeychainHandler } from './keychainHandler.js';
 
 export class FordefiKeychainHandler implements IKeychainHandler {
   constructor(

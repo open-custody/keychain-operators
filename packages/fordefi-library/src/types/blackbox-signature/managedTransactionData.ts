@@ -1,8 +1,8 @@
-import { User } from '../user';
-import { VaultRef } from '../vault/vaultRef';
-import { ActionSigningRequest } from './actionSigningRequest';
-import { PolicyMatch } from './policyMatch';
-import { SignerType } from './signature.signerType';
+import { User } from '../user.js';
+import { VaultRef } from '../vault/vaultRef.js';
+import { ActionSigningRequest } from './actionSigningRequest.js';
+import { PolicyMatch } from './policyMatch.js';
+import { SignerType } from './signature.signerType.js';
 
 export interface ManagedTransationData {
   /** Represents a reference to a user in the Fordefi platform */

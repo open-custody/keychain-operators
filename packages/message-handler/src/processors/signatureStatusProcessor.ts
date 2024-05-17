@@ -3,8 +3,8 @@ import { ISignatureStatusMessage, KeyProvider, MessageBrokerConsumer } from '@wa
 import { logError, logInfo, serialize } from '@warden/utils';
 import { SignRequestStatus } from '@wardenprotocol/wardenjs/codegen/warden/warden/v1beta2/signature';
 
-import { IKeychainHandler } from '../keychains/keychainHandler';
-import { Processor } from './processor';
+import { IKeychainHandler } from '../keychains/keychainHandler.js';
+import { Processor } from './processor.js';
 
 export class SignatureStatusProcessor extends Processor<ISignatureStatusMessage> {
   constructor(

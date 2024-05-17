@@ -2,9 +2,9 @@ import { Inject, Injectable } from '@nestjs/common';
 import { ISignatureStatusMessage, KeyProvider, MessageBrokerProducer } from '@warden/message-broker-library';
 import { logInfo, serialize } from '@warden/utils';
 
-import { TOKEN as messageProducerToken } from '../infrastructure/messageBroker.provider';
-import { FordefiWebhookEvent } from '../models/fordefi.webhook.event';
-import { FORDEFI_NOTE_REGEX } from '../validation/regex';
+import { TOKEN as messageProducerToken } from '../infrastructure/messageBroker.provider.js';
+import { FordefiWebhookEvent } from '../models/fordefi.webhook.event.js';
+import { FORDEFI_NOTE_REGEX } from '../validation/regex.js';
 
 @Injectable()
 export class FordefiWebhookService {

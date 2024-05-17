@@ -1,9 +1,9 @@
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 
-import { ApiUserGuard } from '../guards/apiUser.guard';
-import { SignatureGuard } from '../guards/signature.guard';
-import { FordefiWebhookEvent } from '../models/fordefi.webhook.event';
-import { FordefiWebhookService } from '../services/fordefiWebhook.service';
+import { ApiUserGuard } from '../guards/apiUser.guard.js';
+import { SignatureGuard } from '../guards/signature.guard.js';
+import { FordefiWebhookEvent } from '../models/fordefi.webhook.event.js';
+import { FordefiWebhookService } from '../services/fordefiWebhook.service.js';
 
 @Controller()
 export class AppController {

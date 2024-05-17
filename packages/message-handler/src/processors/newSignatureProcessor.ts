@@ -3,9 +3,9 @@ import { INewSignatureRequestMessage, KeyProvider, MessageBrokerConsumer } from 
 import { logError, logInfo, serialize } from '@warden/utils';
 import { SignRequestStatus } from '@wardenprotocol/wardenjs/codegen/warden/warden/v1beta2/signature';
 
-import { IKeychainHandler } from '../keychains/keychainHandler';
-import { SignatureResultStatus } from '../types/signResult';
-import { Processor } from './processor';
+import { IKeychainHandler } from '../keychains/keychainHandler.js';
+import { SignatureResultStatus } from '../types/signResult.js';
+import { Processor } from './processor.js';
 
 export class NewSignatureProcessor extends Processor<INewSignatureRequestMessage> {
   constructor(

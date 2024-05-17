@@ -1,4 +1,4 @@
-import { User } from '../user';
+import { User } from '../user.js';
 
 export interface ActionSigningRequest {
   /** A list of required signers. A signer can be a person or an API Signer. */

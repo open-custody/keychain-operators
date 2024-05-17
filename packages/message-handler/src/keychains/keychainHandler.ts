@@ -4,7 +4,7 @@ import {
   ISignatureStatusMessage,
 } from '@warden/message-broker-library';
 
-import { ISignatureResult } from '../types/signResult';
+import { ISignatureResult } from '../types/signResult.js';
 
 export interface IKeychainHandler {
   createKey(data: INewKeyRequestMessage): Promise<Buffer>;

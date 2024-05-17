@@ -1,11 +1,11 @@
 import axios from 'axios';
 import * as crypto from 'crypto';
 
-import { CreateBlackBoxSignatureRequestParams } from './types/blackbox-signature/blackBox.createSignatureParams';
-import { BlackBoxSignature } from './types/blackbox-signature/blackBox.signature';
-import { IFordefiConfiguration } from './types/vault/configuration';
-import { Vault, Vaults } from './types/vault/vault';
-import { CreateVaultParams } from './types/vault/vault.createParams';
+import { CreateBlackBoxSignatureRequestParams } from './types/blackbox-signature/blackBox.createSignatureParams.js';
+import { BlackBoxSignature } from './types/blackbox-signature/blackBox.signature.js';
+import { IFordefiConfiguration } from './types/vault/configuration.js';
+import { CreateVaultParams } from './types/vault/vault.createParams.js';
+import { Vault, Vaults } from './types/vault/vault.js';
 
 export class FordefiService {
   configuration: IFordefiConfiguration;
@@ -105,3 +105,5 @@ export class FordefiService {
     return response.data;
   }
 }
+
+export { Vault } from './types/vault/vault.js';

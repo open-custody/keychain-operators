@@ -2,7 +2,7 @@ import { INewSignatureRequest } from '@warden/blockchain-library';
 import { INewSignatureRequestMessage, KeyProvider, MessageBrokerProducer } from '@warden/message-broker-library';
 import { logError, logInfo, serialize } from '@warden/utils';
 
-import { Processor } from './processor';
+import { Processor } from './processor.js';
 
 export class NewSignatureProcessor extends Processor<INewSignatureRequest> {
   constructor(

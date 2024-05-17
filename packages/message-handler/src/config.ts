@@ -1,6 +1,6 @@
 import { JSONSchemaType, envSchema } from 'env-schema';
 
-import { Env } from './types/env';
+import { Env } from './types/env.js';
 
 const schema: JSONSchemaType<Env> = {
   type: 'object',

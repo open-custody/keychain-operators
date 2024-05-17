@@ -11,11 +11,11 @@ import {
 import { SignRequest, SignRequestStatus } from '@wardenprotocol/wardenjs/codegen/warden/warden/v1beta2/signature';
 import Long from 'long';
 
-import { IWardenConfiguration } from './types/configuration';
-import { INewKeyRequest } from './types/newKeyRequest';
-import { INewSignatureRequest } from './types/newSignatureRequest';
-import { ISigner } from './types/signer';
-import { ITransactionState } from './types/transactionState';
+import { IWardenConfiguration } from './types/configuration.js';
+import { INewKeyRequest } from './types/newKeyRequest.js';
+import { INewSignatureRequest } from './types/newSignatureRequest.js';
+import { ISigner } from './types/signer.js';
+import { ITransactionState } from './types/transactionState.js';
 
 const { delay, logError, logInfo } = utils;
 const { createRPCQueryClient } = warden.ClientFactory;
@@ -277,5 +277,5 @@ function bigintToLong(value: bigint) {
   return Long.fromString(value.toString(10));
 }
 
-export { INewKeyRequest } from './types/newKeyRequest';
-export { INewSignatureRequest } from './types/newSignatureRequest';
+export { INewKeyRequest } from './types/newKeyRequest.js';
+export { INewSignatureRequest } from './types/newSignatureRequest.js';

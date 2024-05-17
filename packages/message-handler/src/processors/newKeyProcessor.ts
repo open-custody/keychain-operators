@@ -3,8 +3,8 @@ import { INewKeyRequestMessage, KeyProvider, MessageBrokerConsumer } from '@ward
 import { logError, logInfo, serialize } from '@warden/utils';
 import { KeyRequestStatus } from '@wardenprotocol/wardenjs/codegen/warden/warden/v1beta2/key';
 
-import { IKeychainHandler } from '../keychains/keychainHandler';
-import { Processor } from './processor';
+import { IKeychainHandler } from '../keychains/keychainHandler.js';
+import { Processor } from './processor.js';
 
 export class NewKeyProcessor extends Processor<INewKeyRequestMessage> {
   constructor(

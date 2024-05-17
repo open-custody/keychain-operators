@@ -1,5 +1,5 @@
-import { BlackBoxSignaturePayload } from './blackBox.signaturePayload';
-import { SignerType } from './signature.signerType';
+import { BlackBoxSignaturePayload } from './blackBox.signaturePayload.js';
+import { SignerType } from './signature.signerType.js';
 
 export interface CreateBlackBoxSignatureRequestParams {
   /** The unique identifier of the vault. */
