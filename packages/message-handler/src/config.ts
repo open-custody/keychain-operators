@@ -21,7 +21,6 @@ const schema: JSONSchemaType<Env> = {
     'BROKER_QUEUE_PREFETCH',
     'BROKER_CONSUMER_RETRY_ATTEMPTS',
     'FORDEFI_ACCESS_TOKEN',
-    'FORDEFI_CLIENT_PK',
     'FORDEFI_API_ENDPOINT',
     'FORDEFI_UUIDV5_NAMESPACE',
     'FORDEFI_API_USER_NAME',
@@ -73,9 +72,6 @@ const schema: JSONSchemaType<Env> = {
       type: 'number',
     },
     FORDEFI_ACCESS_TOKEN: {
-      type: 'string',
-    },
-    FORDEFI_CLIENT_PK: {
       type: 'string',
     },
     FORDEFI_API_ENDPOINT: {

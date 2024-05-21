@@ -126,5 +126,4 @@ An active fordefi account is required to bind the keychain.
 4. Specify webhook URL in the [Fordefi webhooks settings.](https://docs.fordefi.com/reference/webhooks) Note: if using
    multiple webhooks they will be calling in the order they were creating. To use multiple chains with single Fordefi
    account use `message-handler` and `webhook` with the same `FORDEFI_API_USER_NAME` for single chain.
-5. `FORDEFI_CLIENT_PK` is the API user's private key from step 3.
-6. `WARDEN_SIGNER_MNEMONIC` is the private key of Keychain party account.
+5. `WARDEN_SIGNER_MNEMONIC` is the private key of Keychain party account.
