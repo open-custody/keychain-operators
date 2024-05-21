@@ -5,6 +5,8 @@ import { Env } from './types/env.js';
 const schema: JSONSchemaType<Env> = {
   type: 'object',
   required: [
+    'AWS_KMS_REGION',
+    'AWS_KMS_FORDEFI_CLIENT_PK_KEY_ID',
     'WARDEN_RPC_URL',
     'WARDEN_POLLING_INTERVAL_MSEC',
     'WARDEN_CHAIN_PREFIX',
@@ -25,6 +27,12 @@ const schema: JSONSchemaType<Env> = {
     'FORDEFI_API_USER_NAME',
   ],
   properties: {
+    AWS_KMS_REGION: {
+      type: 'string',
+    },
+    AWS_KMS_FORDEFI_CLIENT_PK_KEY_ID: {
+      type: 'string',
+    },
     WARDEN_RPC_URL: {
       type: 'string',
     },

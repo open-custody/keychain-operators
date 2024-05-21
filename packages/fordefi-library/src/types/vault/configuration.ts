@@ -1,5 +1,6 @@
 export interface IFordefiConfiguration {
   fordefiAPIEndpoint: string;
   accessToken: string;
-  apiClientPrivateKey: string;
+  awsKmsRegion: string;
+  awsKmsKeyId: string;
 }

@@ -23,8 +23,9 @@ export async function main(): Promise<void> {
 
   const fordefi = new FordefiService({
     accessToken: config.FORDEFI_ACCESS_TOKEN,
-    apiClientPrivateKey: config.FORDEFI_CLIENT_PK,
     fordefiAPIEndpoint: config.FORDEFI_API_ENDPOINT,
+    awsKmsRegion: config.AWS_KMS_REGION,
+    awsKmsKeyId: config.AWS_KMS_FORDEFI_CLIENT_PK_KEY_ID,
   });
 
   const newKeyRequestConsumer = new MessageBrokerConsumer({

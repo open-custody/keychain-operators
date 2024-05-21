@@ -24,6 +24,8 @@ services:
       target: message-handler
     env_file: ./.env
     environment:
+      AWS_KMS_REGION: ${AWS_KMS_REGION}
+      AWS_KMS_FORDEFI_CLIENT_PK_KEY_ID: ${AWS_KMS_FORDEFI_CLIENT_PK_KEY_ID}
       WARDEN_API_URL: ${WARDEN_API_URL}
       WARDEN_RPC_URL: ${WARDEN_RPC_URL}
       WARDEN_POLLING_INTERVAL_MSEC: ${WARDEN_POLLING_INTERVAL_MSEC}

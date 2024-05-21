@@ -1,4 +1,7 @@
 export interface Env {
+  AWS_KMS_REGION: string;
+  AWS_KMS_FORDEFI_CLIENT_PK_KEY_ID: string;
+
   WARDEN_RPC_URL: string;
   WARDEN_POLLING_INTERVAL_MSEC: number;
   WARDEN_CHAIN_PREFIX: string;
