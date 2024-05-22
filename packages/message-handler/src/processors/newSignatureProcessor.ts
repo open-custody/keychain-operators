@@ -43,6 +43,8 @@ export class NewSignatureProcessor extends Processor<INewSignatureRequestMessage
 
     const result = await handler.sign(data);
 
+    logInfo(`Signature result: ${serialize(result)}`);
+
     if (result.status === SignatureResultStatus.Pending) {
       return true;
     }
@@ -56,11 +58,17 @@ export class NewSignatureProcessor extends Processor<INewSignatureRequestMessage
 
   async fulfill(requestId: bigint, signedData: Buffer): Promise<boolean> {
     const transaction = await this.warden.fulfilSignatureRequest(requestId, signedData);
+
+    logInfo(`Transaction fulfilled: ${serialize(transaction)}`);
+
     return transaction?.hash !== undefined && transaction?.errorCode === 0;
   }
 
   async reject(requestId: bigint, reason: string): Promise<boolean> {
     const transaction = await this.warden.rejectSignatureRequest(requestId, reason);
+
+    logInfo(`Transaction rejected: ${serialize(transaction)}`);
+
     return transaction?.hash !== undefined && transaction?.errorCode === 0;
   }
 }
