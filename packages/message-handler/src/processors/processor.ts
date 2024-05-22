@@ -27,6 +27,8 @@ export abstract class Processor<T> {
           logError(`Error while handling the message: ${serialize(message)}. Error: ${error}`);
         } finally {
           attempts--;
+
+          await delay(1000);
         }
       }
     });
