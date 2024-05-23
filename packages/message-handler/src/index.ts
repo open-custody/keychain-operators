@@ -4,12 +4,12 @@ import { KeyProvider, MessageBrokerConsumer } from '@warden/message-broker-libra
 import { logError } from '@warden/utils';
 import 'dotenv/config';
 
-import { config } from './config';
-import { FordefiKeychainHandler } from './keychains/fordefiKeychainHandler';
-import { IKeychainHandler } from './keychains/keychainHandler';
-import { NewKeyProcessor } from './processors/newKeyProcessor';
-import { NewSignatureProcessor } from './processors/newSignatureProcessor';
-import { SignatureStatusProcessor } from './processors/signatureStatusProcessor';
+import { config } from './config.js';
+import { FordefiKeychainHandler } from './keychains/fordefiKeychainHandler.js';
+import { IKeychainHandler } from './keychains/keychainHandler.js';
+import { NewKeyProcessor } from './processors/newKeyProcessor.js';
+import { NewSignatureProcessor } from './processors/newSignatureProcessor.js';
+import { SignatureStatusProcessor } from './processors/signatureStatusProcessor.js';
 
 export async function main(): Promise<void> {
   const warden = new WardenService({
@@ -23,8 +23,9 @@ export async function main(): Promise<void> {
 
   const fordefi = new FordefiService({
     accessToken: config.FORDEFI_ACCESS_TOKEN,
-    apiClientPrivateKey: config.FORDEFI_CLIENT_PK,
     fordefiAPIEndpoint: config.FORDEFI_API_ENDPOINT,
+    awsKmsRegion: config.AWS_KMS_REGION,
+    awsKmsKeyId: config.AWS_KMS_FORDEFI_CLIENT_PK_KEY_ID,
   });
 
   const newKeyRequestConsumer = new MessageBrokerConsumer({

@@ -1,4 +1,4 @@
-import { KeyProvider } from './keyProvider';
+import { KeyProvider } from './keyProvider.js';
 
 export interface INewSignatureRequestMessage {
   provider: KeyProvider;

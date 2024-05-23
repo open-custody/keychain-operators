@@ -41,7 +41,8 @@ BROKER_QUEUE_PREFETCH=1
 BROKER_CONSUMER_RETRY_ATTEMPTS=3
 
 FORDEFI_ACCESS_TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IlRlc3QiLCJpYXQiOjE1MTYyMzkwMjJ9.r2tIfSQyjfh-s0S3IXibZ5ftEeqK7_KfkXPuPBkfFm8
-FORDEFI_CLIENT_PK=----BEGIN EC PRIVATE KEY-----MY_PRIVATE_KEY-----END EC PRIVATE KEY-----
+AWS_KMS_REGION=eu-west-1
+AWS_KMS_FORDEFI_CLIENT_PK_KEY_ID=KEY_ID
 FORDEFI_API_ENDPOINT=https://api.fordefi.com/api/v1/
 FORDEFI_UUIDV5_NAMESPACE=1ebba8e2-97ff-5e44-9555-a5b557e96e0c
 FORDEFI_API_USER_NAME=api-user-name
@@ -125,5 +126,4 @@ An active fordefi account is required to bind the keychain.
 4. Specify webhook URL in the [Fordefi webhooks settings.](https://docs.fordefi.com/reference/webhooks) Note: if using
    multiple webhooks they will be calling in the order they were creating. To use multiple chains with single Fordefi
    account use `message-handler` and `webhook` with the same `FORDEFI_API_USER_NAME` for single chain.
-5. `FORDEFI_CLIENT_PK` is the API user's private key from step 3.
-6. `WARDEN_SIGNER_MNEMONIC` is the private key of Keychain party account.
+5. `WARDEN_SIGNER_MNEMONIC` is the private key of Keychain party account.

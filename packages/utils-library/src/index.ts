@@ -1,4 +1,4 @@
-export { delay } from './services/async';
-export { uuid } from './services/crypto';
-export { logInfo, logError } from './logging/console';
-export { serialize } from './serialization/json';
+export { delay } from './services/async.js';
+export { uuid } from './services/crypto.js';
+export { logInfo, logWarning, logError } from './logging/console.js';
+export { serialize } from './serialization/json.js';

@@ -1,4 +1,4 @@
-import { EnrichedChain } from './enrichedChain';
+import { EnrichedChain } from './enrichedChain.js';
 
 export interface ChainsAddress {
   /** The address as bech32 */

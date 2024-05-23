@@ -1,6 +1,6 @@
-import { BitcoinChain } from './vault.bitcoinChain';
-import { KeyType } from './vault.keyType';
-import { VaultType } from './vault.type';
+import { BitcoinChain } from './vault.bitcoinChain.js';
+import { KeyType } from './vault.keyType.js';
+import { VaultType } from './vault.type.js';
 
 export interface CreateVaultParams {
   /** The name of the vault. */

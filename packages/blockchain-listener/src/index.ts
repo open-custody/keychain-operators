@@ -3,9 +3,9 @@ import { KeyProvider, MessageBrokerProducer } from '@warden/message-broker-libra
 import { logError } from '@warden/utils';
 import 'dotenv/config';
 
-import { config } from './config';
-import { NewKeyProcessor } from './processors/newKeyProcessor';
-import { NewSignatureProcessor } from './processors/newSignatureProcessor';
+import { config } from './config.js';
+import { NewKeyProcessor } from './processors/newKeyProcessor.js';
+import { NewSignatureProcessor } from './processors/newSignatureProcessor.js';
 
 export async function main(): Promise<void> {
   const warden = new WardenService({

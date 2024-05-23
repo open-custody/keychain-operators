@@ -1,6 +1,6 @@
 import { WardenService } from '@warden/blockchain-library';
 import { MessageBrokerConsumer } from '@warden/message-broker-library';
-import { delay, logError, serialize } from '@warden/utils';
+import { delay, logError, logWarning, serialize } from '@warden/utils';
 
 export abstract class Processor<T> {
   warden: WardenService;
@@ -24,9 +24,17 @@ export abstract class Processor<T> {
         try {
           return await this.handle(message, attempts);
         } catch (error) {
-          logError(`Error while handling the message: ${serialize(message)}. Error: ${error}`);
-        } finally {
-          attempts--;
+          if (error.code && error.log && error.code === 32 && error.log.indexOf('account sequence mismatch') >= 0) {
+            logWarning(`Account sequence mismatch while handling the message: ${serialize(message)}. Error: ${error}`);
+
+            await delay(10_000);
+          } else {
+            attempts--;
+
+            logError(`Error while handling the message: ${serialize(message)}. Error: ${error}`);
+
+            await delay(1000);
+          }
         }
       }
     });

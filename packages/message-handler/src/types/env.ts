@@ -1,4 +1,7 @@
 export interface Env {
+  AWS_KMS_REGION: string;
+  AWS_KMS_FORDEFI_CLIENT_PK_KEY_ID: string;
+
   WARDEN_RPC_URL: string;
   WARDEN_POLLING_INTERVAL_MSEC: number;
   WARDEN_CHAIN_PREFIX: string;
@@ -15,7 +18,6 @@ export interface Env {
   BROKER_CONSUMER_RETRY_ATTEMPTS: number;
 
   FORDEFI_ACCESS_TOKEN: string;
-  FORDEFI_CLIENT_PK: string;
   FORDEFI_API_ENDPOINT: string;
   FORDEFI_UUIDV5_NAMESPACE: string;
   FORDEFI_API_USER_NAME: string;

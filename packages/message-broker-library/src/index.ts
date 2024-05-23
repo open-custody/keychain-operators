@@ -1,9 +1,9 @@
-import { MessageBrokerConsumer } from './consumer';
-import { MessageBrokerProducer } from './producer';
-import { ISignatureStatusMessage } from './types/signatureStatusMessage';
-import { KeyProvider } from './types/keyProvider';
-import { INewKeyRequestMessage } from './types/newKeyRequestMessage';
-import { INewSignatureRequestMessage } from './types/newSignatureRequestMessage';
+import { MessageBrokerConsumer } from './consumer.js';
+import { MessageBrokerProducer } from './producer.js';
+import { KeyProvider } from './types/keyProvider.js';
+import { INewKeyRequestMessage } from './types/newKeyRequestMessage.js';
+import { INewSignatureRequestMessage } from './types/newSignatureRequestMessage.js';
+import { ISignatureStatusMessage } from './types/signatureStatusMessage.js';
 
 export {
   KeyProvider,

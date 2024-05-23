@@ -1,11 +1,11 @@
-import { User } from '../user';
-import { ChainsAddress } from './chainAddress';
-import { EnrichedChain } from './enrichedChain';
-import { Keyset } from './keyset';
-import { VaultDerivationInfo } from './vault.derivationInfo';
-import { VaultGroup } from './vault.group';
-import { VaultType } from './vault.type';
-import { UtxoVaultAddress } from './vault.utxoAddress';
+import { User } from '../user.js';
+import { ChainsAddress } from './chainAddress.js';
+import { EnrichedChain } from './enrichedChain.js';
+import { Keyset } from './keyset.js';
+import { VaultDerivationInfo } from './vault.derivationInfo.js';
+import { VaultGroup } from './vault.group.js';
+import { VaultType } from './vault.type.js';
+import { UtxoVaultAddress } from './vault.utxoAddress.js';
 
 /** Represents vault in the Fordefi platform */
 export interface VaultBase {

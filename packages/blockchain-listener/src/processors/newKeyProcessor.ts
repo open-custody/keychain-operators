@@ -2,7 +2,7 @@ import { INewKeyRequest } from '@warden/blockchain-library';
 import { INewKeyRequestMessage, KeyProvider, MessageBrokerProducer } from '@warden/message-broker-library';
 import { logError, logInfo, serialize } from '@warden/utils';
 
-import { Processor } from './processor';
+import { Processor } from './processor.js';
 
 export class NewKeyProcessor extends Processor<INewKeyRequest> {
   constructor(

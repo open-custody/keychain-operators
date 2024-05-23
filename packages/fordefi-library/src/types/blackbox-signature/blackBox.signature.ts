@@ -1,7 +1,6 @@
-import { User } from '../user';
-import { VaultRef } from '../vault/vaultRef';
-import { ManagedTransationData } from './managedTransactionData';
-import { SignerType } from './signature.signerType';
+import { User } from '../user.js';
+import { VaultRef } from '../vault/vaultRef.js';
+import { ManagedTransationData } from './managedTransactionData.js';
 
 export interface BlackBoxSignature {
   /** The unique identifier of the object in the Fordefi platform. */

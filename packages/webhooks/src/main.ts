@@ -2,7 +2,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { logError, logInfo } from '@warden/utils';
 
-import { AppModule } from './app.module';
+import { AppModule } from './app.module.js';
 
 async function bootstrap() {
   logInfo(`Started at ${process.env.WEBHOOK_PORT}`);

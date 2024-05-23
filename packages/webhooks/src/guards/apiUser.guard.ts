@@ -2,7 +2,7 @@ import { CanActivate, ExecutionContext, Injectable, RawBodyRequest, Unauthorized
 import { ConfigService } from '@nestjs/config';
 import { Request } from 'express';
 
-import { FORDEFI_NOTE_REGEX } from '../validation/regex';
+import { FORDEFI_NOTE_REGEX } from '../validation/regex.js';
 
 @Injectable()
 export class ApiUserGuard implements CanActivate {

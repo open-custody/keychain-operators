@@ -1,28 +1,30 @@
 import { DirectSecp256k1HdWallet, Registry } from '@cosmjs/proto-signing';
-import { SigningStargateClient } from '@cosmjs/stargate';
-import { delay, logError, logInfo } from '@warden/utils';
+import { IndexedTx, SigningStargateClient } from '@cosmjs/stargate';
+import * as utils from '@warden/utils';
 import { cosmosProtoRegistry, warden, wardenProtoRegistry } from '@wardenprotocol/wardenjs';
-import { PageRequest } from '@wardenprotocol/wardenjs/dist/codegen/cosmos/base/query/v1beta1/pagination';
-import { KeyRequest, KeyRequestStatus } from '@wardenprotocol/wardenjs/dist/codegen/warden/warden/v1beta2/key';
+import { PageRequest } from '@wardenprotocol/wardenjs/codegen/cosmos/base/query/v1beta1/pagination';
+import { KeyRequest, KeyRequestStatus } from '@wardenprotocol/wardenjs/codegen/warden/warden/v1beta2/key';
 import {
   QueryKeyRequestsRequest,
   QuerySignatureRequestsRequest,
-} from '@wardenprotocol/wardenjs/dist/codegen/warden/warden/v1beta2/query';
-import { SignRequest, SignRequestStatus } from '@wardenprotocol/wardenjs/dist/codegen/warden/warden/v1beta2/signature';
+} from '@wardenprotocol/wardenjs/codegen/warden/warden/v1beta2/query';
+import { SignRequest, SignRequestStatus } from '@wardenprotocol/wardenjs/codegen/warden/warden/v1beta2/signature';
 import Long from 'long';
 
-import { IWardenConfiguration } from './types/configuration';
-import { INewKeyRequest } from './types/newKeyRequest';
-import { INewSignatureRequest } from './types/newSignatureRequest';
-import { ISigner } from './types/signer';
-import { ITransactionState } from './types/transactionState';
+import { IWardenConfiguration } from './types/configuration.js';
+import { INewKeyRequest } from './types/newKeyRequest.js';
+import { INewSignatureRequest } from './types/newSignatureRequest.js';
+import { ISigner } from './types/signer.js';
+import { ITransactionState } from './types/transactionState.js';
 
+const { delay, logError, logInfo } = utils;
 const { createRPCQueryClient } = warden.ClientFactory;
 const { updateKeyRequest, fulfilSignatureRequest } = warden.warden.v1beta2.MessageComposer.withTypeUrl;
 
 const keyRetentionMsec = 60_000;
 
 export class WardenService {
+  locked: boolean;
   keys: Map<bigint, number>;
   signatures: Map<bigint, number>;
 
@@ -165,7 +167,7 @@ export class WardenService {
       status: KeyRequestStatus.KEY_REQUEST_STATUS_FULFILLED,
     });
 
-    const tx = await signer.client.signAndBroadcast(
+    const hash = await signer.client.signAndBroadcastSync(
       signer.account,
       [message],
       {
@@ -175,7 +177,7 @@ export class WardenService {
       '',
     );
 
-    return { hash: tx.transactionHash, errorCode: tx.code };
+    return this.waitTx(signer, hash);
   }
 
   async fulfilSignatureRequest(requestId: bigint, signedData: Buffer): Promise<ITransactionState> {
@@ -190,7 +192,7 @@ export class WardenService {
       },
     });
 
-    const tx = await signer.client.signAndBroadcast(
+    const hash = await signer.client.signAndBroadcastSync(
       signer.account,
       [message],
       {
@@ -200,7 +202,7 @@ export class WardenService {
       '',
     );
 
-    return { hash: tx.transactionHash, errorCode: tx.code };
+    return this.waitTx(signer, hash);
   }
 
   async rejectKeyRequest(requestId: bigint, reason: string): Promise<ITransactionState> {
@@ -213,7 +215,7 @@ export class WardenService {
       rejectReason: reason,
     });
 
-    const tx = await signer.client.signAndBroadcast(
+    const hash = await signer.client.signAndBroadcastSync(
       signer.account,
       [message],
       {
@@ -223,7 +225,7 @@ export class WardenService {
       '',
     );
 
-    return { hash: tx.transactionHash, errorCode: tx.code };
+    return this.waitTx(signer, hash);
   }
 
   async rejectSignatureRequest(requestId: bigint, reason: string): Promise<ITransactionState> {
@@ -236,7 +238,7 @@ export class WardenService {
       rejectReason: reason,
     });
 
-    const tx = await signer.client.signAndBroadcast(
+    const hash = await signer.client.signAndBroadcastSync(
       signer.account,
       [message],
       {
@@ -246,7 +248,7 @@ export class WardenService {
       '',
     );
 
-    return { hash: tx.transactionHash, errorCode: tx.code };
+    return this.waitTx(signer, hash);
   }
 
   async getKeyRequest(requestId: bigint): Promise<void | KeyRequest> {
@@ -266,6 +268,35 @@ export class WardenService {
       .then((x) => x.signRequest)
       .catch((e) => logError(e));
   }
+
+  async waitTx(signer: ISigner, hash: string): Promise<ITransactionState> {
+    let transaction: IndexedTx | null = null;
+    const timeout = new Date().getTime() + 1000 * 60;
+
+    while (this.locked) {
+      await delay(1000);
+    }
+
+    try {
+      this.locked = true;
+
+      while (!transaction && new Date().getTime() < timeout) {
+        transaction = await signer.client.getTx(hash);
+
+        await delay(1000);
+      }
+    } catch {
+      logError(`Failed to fetch transaction status: ${hash}`);
+    } finally {
+      this.locked = false;
+    }
+
+    if (!transaction) {
+      throw new Error(`Failed to wait for transaction: ${hash}`);
+    }
+
+    return { hash: transaction.hash, errorCode: transaction.code };
+  }
 }
 
 function longToBigInt(value: Long) {
@@ -276,5 +307,5 @@ function bigintToLong(value: bigint) {
   return Long.fromString(value.toString(10));
 }
 
-export { INewKeyRequest } from './types/newKeyRequest';
-export { INewSignatureRequest } from './types/newSignatureRequest';
+export { INewKeyRequest } from './types/newKeyRequest.js';
+export { INewSignatureRequest } from './types/newSignatureRequest.js';

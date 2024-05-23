@@ -1,6 +1,6 @@
 import { serialize } from '@warden/utils';
 
-import { MessageBroker } from './broker';
+import { MessageBroker } from './broker.js';
 
 export class MessageBrokerProducer extends MessageBroker {
   async publish<T>(message: T): Promise<boolean> {

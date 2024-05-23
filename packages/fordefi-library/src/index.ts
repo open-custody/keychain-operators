@@ -1,17 +1,22 @@
+import { KMS } from '@aws-sdk/client-kms';
 import axios from 'axios';
 import * as crypto from 'crypto';
 
-import { CreateBlackBoxSignatureRequestParams } from './types/blackbox-signature/blackBox.createSignatureParams';
-import { BlackBoxSignature } from './types/blackbox-signature/blackBox.signature';
-import { IFordefiConfiguration } from './types/vault/configuration';
-import { Vault, Vaults } from './types/vault/vault';
-import { CreateVaultParams } from './types/vault/vault.createParams';
+import { CreateBlackBoxSignatureRequestParams } from './types/blackbox-signature/blackBox.createSignatureParams.js';
+import { BlackBoxSignature } from './types/blackbox-signature/blackBox.signature.js';
+import { IFordefiConfiguration } from './types/vault/configuration.js';
+import { CreateVaultParams } from './types/vault/vault.createParams.js';
+import { Vault, Vaults } from './types/vault/vault.js';
 
 export class FordefiService {
   configuration: IFordefiConfiguration;
+  kms: KMS;
 
   constructor(configuration: IFordefiConfiguration) {
     this.configuration = configuration;
+    this.kms = new KMS({
+      region: this.configuration.awsKmsRegion,
+    });
   }
 
   decompressPublicKey(compressedKey: string, format: crypto.BinaryToTextEncoding): Buffer {
@@ -77,10 +82,15 @@ export class FordefiService {
     const timestamp = new Date().getTime();
     const requestBody = JSON.stringify(createParams);
     const payload = `${path}|${timestamp}|${requestBody}`;
-    const privateKeyBuffer = Buffer.from(this.configuration.apiClientPrivateKey, 'base64');
-    const privateKey = crypto.createPrivateKey(privateKeyBuffer);
-    const sign = crypto.createSign('SHA256').update(payload, 'utf8').end();
-    const signature = sign.sign(privateKey, 'base64');
+
+    const signatureResponse = await this.kms.sign({
+      KeyId: this.configuration.awsKmsKeyId,
+      Message: Buffer.from(payload, 'utf-8'),
+      SigningAlgorithm: 'ECDSA_SHA_256',
+      MessageType: 'RAW',
+    });
+
+    const signature = Buffer.from(signatureResponse.Signature!).toString('base64');
 
     const headers = {
       'Content-type': 'application/json',
@@ -105,3 +115,5 @@ export class FordefiService {
     return response.data;
   }
 }
+
+export { Vault } from './types/vault/vault.js';

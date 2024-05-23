@@ -5,6 +5,7 @@
   "license": "ISC",
   "private": true,
   "main": "dist/index.js",
+  "type": "module",
   "files": [
     "dist"
   ],
@@ -14,11 +15,12 @@
   "dependencies": {
     "@cosmjs/proto-signing": "^0.32.3",
     "@warden/utils": "1.0.0",
-    "@wardenprotocol/wardenjs": "^0.0.4"
+    "@wardenprotocol/wardenjs": "^0.0.6",
+    "@tanstack/react-query": "^4.36.1",
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
     "react": "^18.2.0",
-    "react-dom": "^18.2.0",
     "typescript": "^5.3.3"
   }
 }

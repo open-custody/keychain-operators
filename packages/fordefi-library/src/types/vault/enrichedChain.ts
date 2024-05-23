@@ -1,4 +1,4 @@
-import { VaultType } from './vault.type';
+import { VaultType } from './vault.type.js';
 
 export interface EnrichedChain {
   /** The type of the chain. */

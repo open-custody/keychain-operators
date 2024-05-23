@@ -1,11 +1,11 @@
 import { WardenService } from '@warden/blockchain-library';
 import { INewSignatureRequestMessage, KeyProvider, MessageBrokerConsumer } from '@warden/message-broker-library';
 import { logError, logInfo, serialize } from '@warden/utils';
-import { SignRequestStatus } from '@wardenprotocol/wardenjs/dist/codegen/warden/warden/v1beta2/signature';
+import { SignRequestStatus } from '@wardenprotocol/wardenjs/codegen/warden/warden/v1beta2/signature';
 
-import { IKeychainHandler } from '../keychains/keychainHandler';
-import { SignatureResultStatus } from '../types/signResult';
-import { Processor } from './processor';
+import { IKeychainHandler } from '../keychains/keychainHandler.js';
+import { SignatureResultStatus } from '../types/signResult.js';
+import { Processor } from './processor.js';
 
 export class NewSignatureProcessor extends Processor<INewSignatureRequestMessage> {
   constructor(
@@ -43,6 +43,8 @@ export class NewSignatureProcessor extends Processor<INewSignatureRequestMessage
 
     const result = await handler.sign(data);
 
+    logInfo(`Signature result: ${serialize(result)}`);
+
     if (result.status === SignatureResultStatus.Pending) {
       return true;
     }
@@ -56,11 +58,17 @@ export class NewSignatureProcessor extends Processor<INewSignatureRequestMessage
 
   async fulfill(requestId: bigint, signedData: Buffer): Promise<boolean> {
     const transaction = await this.warden.fulfilSignatureRequest(requestId, signedData);
+
+    logInfo(`Transaction fulfilled: ${serialize(transaction)}`);
+
     return transaction?.hash !== undefined && transaction?.errorCode === 0;
   }
 
   async reject(requestId: bigint, reason: string): Promise<boolean> {
     const transaction = await this.warden.rejectSignatureRequest(requestId, reason);
+
+    logInfo(`Transaction rejected: ${serialize(transaction)}`);
+
     return transaction?.hash !== undefined && transaction?.errorCode === 0;
   }
 }

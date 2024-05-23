@@ -1,10 +1,10 @@
 import { WardenService } from '@warden/blockchain-library';
 import { ISignatureStatusMessage, KeyProvider, MessageBrokerConsumer } from '@warden/message-broker-library';
 import { logError, logInfo, serialize } from '@warden/utils';
-import { SignRequestStatus } from '@wardenprotocol/wardenjs/dist/codegen/warden/warden/v1beta2/signature';
+import { SignRequestStatus } from '@wardenprotocol/wardenjs/codegen/warden/warden/v1beta2/signature';
 
-import { IKeychainHandler } from '../keychains/keychainHandler';
-import { Processor } from './processor';
+import { IKeychainHandler } from '../keychains/keychainHandler.js';
+import { Processor } from './processor.js';
 
 export class SignatureStatusProcessor extends Processor<ISignatureStatusMessage> {
   constructor(
@@ -51,11 +51,17 @@ export class SignatureStatusProcessor extends Processor<ISignatureStatusMessage>
 
   async fulfill(requestId: bigint, signature: Buffer): Promise<boolean> {
     const transaction = await this.warden.fulfilSignatureRequest(requestId, signature);
+
+    logInfo(`Transaction status fulfilled: ${serialize(transaction)}`);
+
     return transaction?.hash !== undefined && transaction?.errorCode === 0;
   }
 
   async reject(requestId: bigint, reason: string): Promise<boolean> {
     const transaction = await this.warden.rejectSignatureRequest(requestId, reason);
+
+    logInfo(`Transaction status rejected: ${serialize(transaction)}`);
+
     return transaction?.hash !== undefined && transaction?.errorCode === 0;
   }
 }

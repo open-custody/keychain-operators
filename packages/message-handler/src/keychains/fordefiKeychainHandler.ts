@@ -1,14 +1,13 @@
-import { FordefiService } from '@warden/fordefi-library';
-import { Vault } from '@warden/fordefi-library/dist/types/vault/vault';
+import { FordefiService, Vault } from '@warden/fordefi-library';
 import {
   INewKeyRequestMessage,
   INewSignatureRequestMessage,
   ISignatureStatusMessage,
 } from '@warden/message-broker-library';
-import { uuid } from '@warden/utils';
+import { logInfo, serialize, uuid } from '@warden/utils';
 
-import { ISignatureResult, SignatureResultStatus } from '../types/signResult';
-import { IKeychainHandler } from './keychainHandler';
+import { ISignatureResult, SignatureResultStatus } from '../types/signResult.js';
+import { IKeychainHandler } from './keychainHandler.js';
 
 export class FordefiKeychainHandler implements IKeychainHandler {
   constructor(
@@ -52,6 +51,8 @@ export class FordefiKeychainHandler implements IKeychainHandler {
         reason: 'Vault was not found',
       };
 
+    logInfo(`New blackbox signature has been requested ${serialize(data)}`);
+
     const result = await this.fordefi.createBlackBoxSignatureRequest(
       {
         note: `cr_${data.creator}-srq-${data.requestId}-${this.fordefiApiUserName}`,
@@ -80,6 +81,8 @@ export class FordefiKeychainHandler implements IKeychainHandler {
         status = SignatureResultStatus.Pending;
         break;
     }
+
+    logInfo(`New blackbox signature has been created at: ${result.created_at} with reason: ${result.state}`);
 
     const signature =
       status === SignatureResultStatus.Success ? Buffer.from(result.signatures[0].data, 'base64') : undefined;

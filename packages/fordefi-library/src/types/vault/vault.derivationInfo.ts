@@ -1,4 +1,4 @@
-import { MasterPublicKey } from './masterPublicKey';
+import { MasterPublicKey } from './masterPublicKey.js';
 
 export interface VaultDerivationInfo {
   /** The BIP 44 derivation path of the vault. */
