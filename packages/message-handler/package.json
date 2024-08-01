@@ -18,7 +18,7 @@
     "@warden/fordefi-library": "1.0.0",
     "@warden/message-broker-library": "1.0.0",
     "@warden/utils": "1.0.0",
-    "@wardenprotocol/wardenjs": "^0.0.6",
+    "@wardenprotocol/wardenjs": "0.0.8",
     "dotenv": "^16.4.5",
     "env-schema": "^5.2.1"
   },

@@ -3,13 +3,12 @@ import { IndexedTx, SigningStargateClient } from '@cosmjs/stargate';
 import * as utils from '@warden/utils';
 import { cosmosProtoRegistry, warden, wardenProtoRegistry } from '@wardenprotocol/wardenjs';
 import { PageRequest } from '@wardenprotocol/wardenjs/codegen/cosmos/base/query/v1beta1/pagination';
-import { KeyRequest, KeyRequestStatus } from '@wardenprotocol/wardenjs/codegen/warden/warden/v1beta2/key';
+import { KeyRequest, KeyRequestStatus } from '@wardenprotocol/wardenjs/codegen/warden/warden/v1beta3/key';
 import {
   QueryKeyRequestsRequest,
-  QuerySignatureRequestsRequest,
-} from '@wardenprotocol/wardenjs/codegen/warden/warden/v1beta2/query';
-import { SignRequest, SignRequestStatus } from '@wardenprotocol/wardenjs/codegen/warden/warden/v1beta2/signature';
-import Long from 'long';
+  QuerySignRequestsRequest,
+} from '@wardenprotocol/wardenjs/codegen/warden/warden/v1beta3/query';
+import { SignRequest, SignRequestStatus } from '@wardenprotocol/wardenjs/codegen/warden/warden/v1beta3/signature';
 
 import { IWardenConfiguration } from './types/configuration.js';
 import { INewKeyRequest } from './types/newKeyRequest.js';
@@ -19,7 +18,7 @@ import { ITransactionState } from './types/transactionState.js';
 
 const { delay, logError, logInfo } = utils;
 const { createRPCQueryClient } = warden.ClientFactory;
-const { updateKeyRequest, fulfilSignatureRequest } = warden.warden.v1beta2.MessageComposer.withTypeUrl;
+const { fulfilKeyRequest, fulfilSignRequest } = warden.warden.v1beta3.MessageComposer.withTypeUrl;
 
 const keyRetentionMsec = 60_000;
 
@@ -53,7 +52,7 @@ export class WardenService {
   }
 
   async *pollPendingKeyRequests(keychainId: bigint): AsyncGenerator<INewKeyRequest> {
-    const query = (await this.query()).warden.warden.v1beta2;
+    const query = (await this.query()).warden.warden.v1beta3;
 
     while (true) {
       await delay(this.configuration.pollingIntervalMsec);
@@ -72,9 +71,9 @@ export class WardenService {
       const pendingKeys = await query
         .keyRequests(
           QueryKeyRequestsRequest.fromPartial({
-            keychainId: Long.fromString(keychainId.toString(10)),
+            keychainId: keychainId,
             status: KeyRequestStatus.KEY_REQUEST_STATUS_PENDING,
-            pagination: PageRequest.fromPartial({ limit: Long.fromNumber(100) }),
+            pagination: PageRequest.fromPartial({ limit: 100n }),
           }),
         )
         .then((x) => x.keyRequests)
@@ -85,14 +84,14 @@ export class WardenService {
       for (let i = 0; i < +pendingKeys.length; i++) {
         const key = pendingKeys[i];
 
-        if (this.keys.has(longToBigInt(key.id))) continue;
+        if (this.keys.has(key.id)) continue;
 
         this.keys.set(BigInt(key.id.toString(10)), new Date().getTime() + keyRetentionMsec);
 
         yield {
-          id: longToBigInt(key.id),
-          keychainId: longToBigInt(key.keychainId),
-          spaceId: longToBigInt(key.spaceId),
+          id: key.id,
+          keychainId: key.keychainId,
+          spaceId: key.spaceId,
           creator: key.creator,
         };
       }
@@ -100,7 +99,7 @@ export class WardenService {
   }
 
   async *pollPendingSignatureRequests(keychainId: bigint): AsyncGenerator<INewSignatureRequest> {
-    const query = (await this.query()).warden.warden.v1beta2;
+    const query = (await this.query()).warden.warden.v1beta3;
 
     while (true) {
       await delay(this.configuration.pollingIntervalMsec);
@@ -117,11 +116,11 @@ export class WardenService {
       }
 
       const pendingSignatures = await query
-        .signatureRequests(
-          QuerySignatureRequestsRequest.fromPartial({
-            keychainId: bigintToLong(keychainId),
+        .signRequests(
+          QuerySignRequestsRequest.fromPartial({
+            keychainId: keychainId,
             status: SignRequestStatus.SIGN_REQUEST_STATUS_PENDING,
-            pagination: PageRequest.fromPartial({ limit: Long.fromNumber(100) }),
+            pagination: PageRequest.fromPartial({ limit: 100n }),
           }),
         )
         .then((x) => x.signRequests)
@@ -132,9 +131,9 @@ export class WardenService {
       for (let i = 0; i < +pendingSignatures.length; i++) {
         const request = pendingSignatures[i];
 
-        if (this.signatures.has(longToBigInt(request.id))) continue;
+        if (this.signatures.has(request.id)) continue;
 
-        this.signatures.set(longToBigInt(request.id), new Date().getTime() + keyRetentionMsec);
+        this.signatures.set(request.id, new Date().getTime() + keyRetentionMsec);
 
         const key = await query
           .keyById({
@@ -147,7 +146,7 @@ export class WardenService {
         if (!key) continue;
 
         yield {
-          id: longToBigInt(request.id),
+          id: request.id,
           publicKey: key.publicKey,
           keychainId: keychainId,
           creator: request.creator,
@@ -160,9 +159,9 @@ export class WardenService {
   async fulfilKeyRequest(requestId: bigint, publicKey: Buffer): Promise<ITransactionState> {
     const signer = await this.signer();
 
-    const message = updateKeyRequest({
+    const message = fulfilKeyRequest({
       creator: signer.account,
-      requestId: bigintToLong(requestId),
+      requestId: requestId,
       key: { publicKey: publicKey },
       status: KeyRequestStatus.KEY_REQUEST_STATUS_FULFILLED,
     });
@@ -183,9 +182,9 @@ export class WardenService {
   async fulfilSignatureRequest(requestId: bigint, signedData: Buffer): Promise<ITransactionState> {
     const signer = await this.signer();
 
-    const message = fulfilSignatureRequest({
+    const message = fulfilSignRequest({
       creator: signer.account,
-      requestId: bigintToLong(requestId),
+      requestId: requestId,
       status: SignRequestStatus.SIGN_REQUEST_STATUS_FULFILLED,
       payload: {
         signedData: signedData,
@@ -208,9 +207,9 @@ export class WardenService {
   async rejectKeyRequest(requestId: bigint, reason: string): Promise<ITransactionState> {
     const signer = await this.signer();
 
-    const message = updateKeyRequest({
+    const message = fulfilKeyRequest({
       creator: signer.account,
-      requestId: bigintToLong(requestId),
+      requestId: requestId,
       status: KeyRequestStatus.KEY_REQUEST_STATUS_REJECTED,
       rejectReason: reason,
     });
@@ -231,9 +230,9 @@ export class WardenService {
   async rejectSignatureRequest(requestId: bigint, reason: string): Promise<ITransactionState> {
     const signer = await this.signer();
 
-    const message = fulfilSignatureRequest({
+    const message = fulfilSignRequest({
       creator: signer.account,
-      requestId: bigintToLong(requestId),
+      requestId: requestId,
       status: SignRequestStatus.SIGN_REQUEST_STATUS_REJECTED,
       rejectReason: reason,
     });
@@ -252,19 +251,19 @@ export class WardenService {
   }
 
   async getKeyRequest(requestId: bigint): Promise<void | KeyRequest> {
-    const query = (await this.query()).warden.warden.v1beta2;
+    const query = (await this.query()).warden.warden.v1beta3;
 
     return await query
-      .keyRequestById({ id: bigintToLong(requestId) })
+      .keyRequestById({ id: requestId })
       .then((x) => x.keyRequest)
       .catch((e) => logError(e));
   }
 
   async getSignatureRequest(requestId: bigint): Promise<void | SignRequest> {
-    const query = (await this.query()).warden.warden.v1beta2;
+    const query = (await this.query()).warden.warden.v1beta3;
 
     return await query
-      .signatureRequestById({ id: bigintToLong(requestId) })
+      .signRequestById({ id: requestId })
       .then((x) => x.signRequest)
       .catch((e) => logError(e));
   }
@@ -297,14 +296,6 @@ export class WardenService {
 
     return { hash: transaction.hash, errorCode: transaction.code };
   }
-}
-
-function longToBigInt(value: Long) {
-  return BigInt(value.toString(10));
-}
-
-function bigintToLong(value: bigint) {
-  return Long.fromString(value.toString(10));
 }
 
 export { INewKeyRequest } from './types/newKeyRequest.js';
