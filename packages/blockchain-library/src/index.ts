@@ -173,7 +173,7 @@ export class WardenService {
       [message],
       {
         gas: this.configuration.signerGas,
-        amount: [{ denom: 'uward', amount: this.configuration.signerGasUwardAmount }],
+        amount: [{ denom: 'award', amount: this.configuration.signerGasUwardAmount }],
       },
       '',
     );
@@ -198,7 +198,7 @@ export class WardenService {
       [message],
       {
         gas: this.configuration.signerGas,
-        amount: [{ denom: 'uward', amount: this.configuration.signerGasUwardAmount }],
+        amount: [{ denom: 'award', amount: this.configuration.signerGasUwardAmount }],
       },
       '',
     );
@@ -221,7 +221,7 @@ export class WardenService {
       [message],
       {
         gas: this.configuration.signerGas,
-        amount: [{ denom: 'uward', amount: this.configuration.signerGasUwardAmount }],
+        amount: [{ denom: 'award', amount: this.configuration.signerGasUwardAmount }],
       },
       '',
     );
@@ -244,7 +244,7 @@ export class WardenService {
       [message],
       {
         gas: this.configuration.signerGas,
-        amount: [{ denom: 'uward', amount: this.configuration.signerGasUwardAmount }],
+        amount: [{ denom: 'award', amount: this.configuration.signerGasUwardAmount }],
       },
       '',
     );
