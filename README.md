@@ -9,6 +9,7 @@ WARDEN_RPC_URL=http://127.0.0.1:26657
 WARDEN_POLLING_INTERVAL_MSEC=5000
 WARDEN_CHAIN_PREFIX=warden
 WARDEN_SIGNER_MNEMONIC=test test test test test test test test test test test test test test test test test test test test test test test test
+WARDEN_SIGNER_DERIVATION_PATH=m/44'/60'/0'/0/0
 WARDEN_SIGNER_GAS=400000
 WARDEN_SIGNER_GAS_UWARD=500
 WARDEN_FORDEFI_KEYCHAIN_ID=3
@@ -29,6 +30,7 @@ WARDEN_RPC_URL=http://127.0.0.1:26657
 WARDEN_POLLING_INTERVAL_MSEC=5000
 WARDEN_CHAIN_PREFIX=warden
 WARDEN_SIGNER_MNEMONIC=test test test test test test test test test test test test test test test test test test test test test test test test
+WARDEN_SIGNER_DERIVATION_PATH="m/44'/60'/0'/0/0"
 WARDEN_SIGNER_GAS=400000
 WARDEN_SIGNER_GAS_UWARD=500
 
@@ -46,6 +48,7 @@ AWS_KMS_FORDEFI_CLIENT_PK_KEY_ID=KEY_ID
 FORDEFI_API_ENDPOINT=https://api.fordefi.com/api/v1/
 FORDEFI_UUIDV5_NAMESPACE=1ebba8e2-97ff-5e44-9555-a5b557e96e0c
 FORDEFI_API_USER_NAME=api-user-name
+SIGNER_DERIVATION_PATH=m/44'/60'/0'/0/0
 ```
 
 ## @warden/webhooks

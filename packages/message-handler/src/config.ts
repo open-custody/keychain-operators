@@ -11,6 +11,7 @@ const schema: JSONSchemaType<Env> = {
     'WARDEN_POLLING_INTERVAL_MSEC',
     'WARDEN_CHAIN_PREFIX',
     'WARDEN_SIGNER_MNEMONIC',
+    'WARDEN_SIGNER_DERIVATION_PATH',
     'WARDEN_SIGNER_GAS',
     'WARDEN_SIGNER_GAS_UWARD',
     'BROKER_CONNECTION_STRING',
@@ -42,6 +43,9 @@ const schema: JSONSchemaType<Env> = {
       type: 'string',
     },
     WARDEN_SIGNER_MNEMONIC: {
+      type: 'string',
+    },
+    WARDEN_SIGNER_DERIVATION_PATH: {
       type: 'string',
     },
     WARDEN_SIGNER_GAS: {

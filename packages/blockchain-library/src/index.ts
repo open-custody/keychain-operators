@@ -1,3 +1,4 @@
+import { stringToPath } from '@cosmjs/crypto';
 import { DirectSecp256k1HdWallet, Registry } from '@cosmjs/proto-signing';
 import { IndexedTx, SigningStargateClient } from '@cosmjs/stargate';
 import * as utils from '@warden/utils';
@@ -39,6 +40,7 @@ export class WardenService {
   async signer(): Promise<ISigner> {
     const wallet = await DirectSecp256k1HdWallet.fromMnemonic(this.configuration.signerMnemonic, {
       prefix: this.configuration.prefix,
+      hdPaths: [stringToPath(this.configuration.signerDerivationPath)],
     });
 
     const accounts = await wallet.getAccounts();

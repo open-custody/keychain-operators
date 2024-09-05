@@ -17,6 +17,7 @@ export async function main(): Promise<void> {
     prefix: config.WARDEN_CHAIN_PREFIX,
     rpcURL: config.WARDEN_RPC_URL,
     signerMnemonic: config.WARDEN_SIGNER_MNEMONIC,
+    signerDerivationPath: config.WARDEN_SIGNER_DERIVATION_PATH,
     signerGas: config.WARDEN_SIGNER_GAS.toString(10),
     signerGasUwardAmount: config.WARDEN_SIGNER_GAS_UWARD.toString(10),
   });

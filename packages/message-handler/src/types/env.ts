@@ -6,6 +6,7 @@ export interface Env {
   WARDEN_POLLING_INTERVAL_MSEC: number;
   WARDEN_CHAIN_PREFIX: string;
   WARDEN_SIGNER_MNEMONIC: string;
+  WARDEN_SIGNER_DERIVATION_PATH: string;
   WARDEN_SIGNER_GAS: number;
   WARDEN_SIGNER_GAS_UWARD: number;
 
