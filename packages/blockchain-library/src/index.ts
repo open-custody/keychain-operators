@@ -27,7 +27,6 @@ const { createRPCQueryClient } = warden.ClientFactory;
 const { fulfilKeyRequest, fulfilSignRequest } = warden.warden.v1beta3.MessageComposer.withTypeUrl;
 
 const keyRetentionMsec = 60_000;
-
 export class WardenService {
   locked: boolean;
   keys: Map<bigint, number>;
