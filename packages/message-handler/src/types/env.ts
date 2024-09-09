@@ -8,7 +8,6 @@ export interface Env {
   WARDEN_CHAIN_ID: string;
   WARDEN_CHAIN_PREFIX: string;
   WARDEN_SIGNER_MNEMONIC: string;
-  WARDEN_SIGNER_DERIVATION_PATH: string;
   WARDEN_SIGNER_GAS: number;
   WARDEN_SIGNER_GAS_UWARD: number;
 

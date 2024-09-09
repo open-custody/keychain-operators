@@ -11,7 +11,6 @@ WARDEN_POLLING_INTERVAL_MSEC=5000
 WARDEN_CHAIN_ID=warden
 WARDEN_CHAIN_PREFIX=warden
 WARDEN_SIGNER_MNEMONIC=test test test test test test test test test test test test test test test test test test test test test test test test
-WARDEN_SIGNER_DERIVATION_PATH=m/44'/60'/0'/0/0
 WARDEN_SIGNER_GAS=400000
 WARDEN_SIGNER_GAS_UWARD=500
 WARDEN_FORDEFI_KEYCHAIN_ID=3
@@ -34,7 +33,6 @@ WARDEN_POLLING_INTERVAL_MSEC=5000
 WARDEN_CHAIN_ID=warden
 WARDEN_CHAIN_PREFIX=warden
 WARDEN_SIGNER_MNEMONIC=test test test test test test test test test test test test test test test test test test test test test test test test
-WARDEN_SIGNER_DERIVATION_PATH="m/44'/60'/0'/0/0"
 WARDEN_SIGNER_GAS=400000
 WARDEN_SIGNER_GAS_UWARD=500
 

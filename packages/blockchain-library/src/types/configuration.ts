@@ -7,5 +7,4 @@ export interface IWardenConfiguration {
   signerMnemonic: string;
   signerGas: string;
   signerGasUwardAmount: string;
-  signerDerivationPath: string;
 }
