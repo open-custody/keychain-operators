@@ -324,7 +324,7 @@ export class WardenService {
           hash,
         });
       } catch {
-        logError(`Failed to fetch transaction status: ${hash}`);
+        logInfo(`Fetching the transaction: ${hash}`);
       }
 
       await delay(1000);
