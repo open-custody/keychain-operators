@@ -1,15 +1,17 @@
-import { stringToPath } from '@cosmjs/crypto';
-import { DirectSecp256k1HdWallet, Registry } from '@cosmjs/proto-signing';
-import { IndexedTx, SigningStargateClient } from '@cosmjs/stargate';
+import { toBech32 } from '@cosmjs/encoding';
+import { Int53 } from '@cosmjs/math';
+import { EncodeObject, TxBodyEncodeObject, makeAuthInfoBytes, makeSignDoc } from '@cosmjs/proto-signing';
 import * as utils from '@warden/utils';
-import { cosmosProtoRegistry, warden, wardenProtoRegistry } from '@wardenprotocol/wardenjs';
+import { cosmos, ethermint, getSigningWardenClientOptions, google, warden } from '@wardenprotocol/wardenjs';
 import { PageRequest } from '@wardenprotocol/wardenjs/codegen/cosmos/base/query/v1beta1/pagination';
+import { GetTxResponse } from '@wardenprotocol/wardenjs/codegen/cosmos/tx/v1beta1/service';
 import { KeyRequest, KeyRequestStatus } from '@wardenprotocol/wardenjs/codegen/warden/warden/v1beta3/key';
 import {
   QueryKeyRequestsRequest,
   QuerySignRequestsRequest,
 } from '@wardenprotocol/wardenjs/codegen/warden/warden/v1beta3/query';
 import { SignRequest, SignRequestStatus } from '@wardenprotocol/wardenjs/codegen/warden/warden/v1beta3/signature';
+import { ethers } from 'ethers';
 
 import { IWardenConfiguration } from './types/configuration.js';
 import { INewKeyRequest } from './types/newKeyRequest.js';
@@ -17,6 +19,9 @@ import { INewSignatureRequest } from './types/newSignatureRequest.js';
 import { ISigner } from './types/signer.js';
 import { ITransactionState } from './types/transactionState.js';
 
+const { Any } = google.protobuf;
+const PubKey = ethermint.crypto.v1.ethsecp256k1.PubKey;
+const { TxBody, TxRaw, SignDoc } = cosmos.tx.v1beta1;
 const { delay, logError, logInfo } = utils;
 const { createRPCQueryClient } = warden.ClientFactory;
 const { fulfilKeyRequest, fulfilSignRequest } = warden.warden.v1beta3.MessageComposer.withTypeUrl;
@@ -38,19 +43,81 @@ export class WardenService {
   }
 
   async signer(): Promise<ISigner> {
-    const wallet = await DirectSecp256k1HdWallet.fromMnemonic(this.configuration.signerMnemonic, {
-      prefix: this.configuration.prefix,
-      hdPaths: [stringToPath(this.configuration.signerDerivationPath)],
+    const ethWallet = ethers.Wallet.fromPhrase(this.configuration.signerMnemonic);
+    const ethAddress = ethWallet.address;
+    const wardenAddress = toBech32(this.configuration.prefix, ethers.getBytes(ethAddress));
+    const pubkey = ethers.getBytes(ethWallet.publicKey);
+
+    return {
+      wallet: ethWallet,
+      account: wardenAddress,
+      signerPubKey: pubkey,
+    };
+  }
+
+  async signAndBroadcast(signer: ISigner, messages: EncodeObject[]) {
+    const query = (await this.query()).cosmos.auth.v1beta1;
+
+    const { account } = await query.account({ address: signer.account });
+    const pubk = Any.fromPartial({
+      typeUrl: PubKey.typeUrl,
+      value: PubKey.encode({
+        key: signer.signerPubKey,
+      }).finish(),
     });
 
-    const accounts = await wallet.getAccounts();
-    const account = accounts[0].address;
-
-    const client = await SigningStargateClient.connectWithSigner(this.configuration.rpcURL, wallet, {
-      registry: new Registry([...wardenProtoRegistry, ...cosmosProtoRegistry]),
+    const txBody = TxBody.fromPartial({
+      messages: messages,
+      memo: '',
     });
 
-    return { client, account };
+    const txBodyEncodeObject: TxBodyEncodeObject = {
+      typeUrl: '/cosmos.tx.v1beta1.TxBody',
+      value: txBody,
+    };
+
+    const { registry } = getSigningWardenClientOptions();
+    const txBodyBytes = registry.encode(txBodyEncodeObject);
+    const gasLimit = Int53.fromString(this.configuration.signerGas).toNumber();
+    const authInfoBytes = makeAuthInfoBytes(
+      [{ pubkey: pubk, sequence: account!.sequence }],
+      [{ denom: 'award', amount: this.configuration.signerGasUwardAmount }],
+      gasLimit,
+      undefined,
+      undefined,
+    );
+    const signDoc = makeSignDoc(txBodyBytes, authInfoBytes, this.configuration.chainId, Number(account!.accountNumber));
+
+    const signDocBytes = SignDoc.encode(signDoc).finish();
+    const signatureRaw = signer.wallet.signingKey.sign(ethers.keccak256(signDocBytes));
+    const signature = ethers.Signature.from(signatureRaw);
+    const signatureRS = ethers.concat([signature.r, signature.s]);
+    const signatureRSBytes = ethers.getBytes(signatureRS);
+
+    const signedTx = TxRaw.encode(
+      TxRaw.fromPartial({
+        authInfoBytes: signDoc.authInfoBytes,
+        bodyBytes: signDoc.bodyBytes,
+        signatures: [signatureRSBytes],
+      }),
+    ).finish();
+
+    const response = await fetch(`${this.configuration.apiURL}/cosmos/tx/v1beta1/txs`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        tx_bytes: ethers.encodeBase64(signedTx),
+        mode: 'BROADCAST_MODE_SYNC',
+      }),
+    });
+
+    const resJson = await response.json();
+
+    console.log(resJson);
+
+    return JSON.parse(resJson).hash;
   }
 
   async *pollPendingKeyRequests(keychainId: bigint): AsyncGenerator<INewKeyRequest> {
@@ -168,17 +235,9 @@ export class WardenService {
       status: KeyRequestStatus.KEY_REQUEST_STATUS_FULFILLED,
     });
 
-    const hash = await signer.client.signAndBroadcastSync(
-      signer.account,
-      [message],
-      {
-        gas: this.configuration.signerGas,
-        amount: [{ denom: 'award', amount: this.configuration.signerGasUwardAmount }],
-      },
-      '',
-    );
+    const txHash = await this.signAndBroadcast(signer, [message]);
 
-    return this.waitTx(signer, hash);
+    return this.waitTx(txHash);
   }
 
   async fulfilSignatureRequest(requestId: bigint, signedData: Buffer): Promise<ITransactionState> {
@@ -193,17 +252,9 @@ export class WardenService {
       },
     });
 
-    const hash = await signer.client.signAndBroadcastSync(
-      signer.account,
-      [message],
-      {
-        gas: this.configuration.signerGas,
-        amount: [{ denom: 'award', amount: this.configuration.signerGasUwardAmount }],
-      },
-      '',
-    );
+    const txHash = await this.signAndBroadcast(signer, [message]);
 
-    return this.waitTx(signer, hash);
+    return this.waitTx(txHash);
   }
 
   async rejectKeyRequest(requestId: bigint, reason: string): Promise<ITransactionState> {
@@ -216,17 +267,9 @@ export class WardenService {
       rejectReason: reason,
     });
 
-    const hash = await signer.client.signAndBroadcastSync(
-      signer.account,
-      [message],
-      {
-        gas: this.configuration.signerGas,
-        amount: [{ denom: 'award', amount: this.configuration.signerGasUwardAmount }],
-      },
-      '',
-    );
+    const txHash = await this.signAndBroadcast(signer, [message]);
 
-    return this.waitTx(signer, hash);
+    return this.waitTx(txHash);
   }
 
   async rejectSignatureRequest(requestId: bigint, reason: string): Promise<ITransactionState> {
@@ -239,17 +282,9 @@ export class WardenService {
       rejectReason: reason,
     });
 
-    const hash = await signer.client.signAndBroadcastSync(
-      signer.account,
-      [message],
-      {
-        gas: this.configuration.signerGas,
-        amount: [{ denom: 'award', amount: this.configuration.signerGasUwardAmount }],
-      },
-      '',
-    );
+    const txHash = await this.signAndBroadcast(signer, [message]);
 
-    return this.waitTx(signer, hash);
+    return this.waitTx(txHash);
   }
 
   async getKeyRequest(requestId: bigint): Promise<void | KeyRequest> {
@@ -270,8 +305,10 @@ export class WardenService {
       .catch((e) => logError(e));
   }
 
-  async waitTx(signer: ISigner, hash: string): Promise<ITransactionState> {
-    let transaction: IndexedTx | null = null;
+  async waitTx(hash: string): Promise<ITransactionState> {
+    const query = (await this.query()).cosmos.tx;
+
+    let transaction: GetTxResponse | null = null;
     const timeout = new Date().getTime() + 1000 * 60;
 
     while (this.locked) {
@@ -282,7 +319,9 @@ export class WardenService {
       this.locked = true;
 
       while (!transaction && new Date().getTime() < timeout) {
-        transaction = await signer.client.getTx(hash);
+        transaction = await query.v1beta1.getTx({
+          hash,
+        });
 
         await delay(1000);
       }
@@ -296,7 +335,7 @@ export class WardenService {
       throw new Error(`Failed to wait for transaction: ${hash}`);
     }
 
-    return { hash: transaction.hash, errorCode: transaction.code };
+    return { hash: transaction?.txResponse?.txhash, errorCode: transaction?.txResponse?.code ?? 0 };
   }
 }
 

@@ -6,7 +6,9 @@ const schema: JSONSchemaType<Env> = {
   type: 'object',
   required: [
     'WARDEN_RPC_URL',
+    'WARDEN_API_URL',
     'WARDEN_POLLING_INTERVAL_MSEC',
+    'WARDEN_CHAIN_ID',
     'WARDEN_CHAIN_PREFIX',
     'WARDEN_SIGNER_MNEMONIC',
     'WARDEN_SIGNER_DERIVATION_PATH',
@@ -23,8 +25,14 @@ const schema: JSONSchemaType<Env> = {
     WARDEN_RPC_URL: {
       type: 'string',
     },
+    WARDEN_API_URL: {
+      type: 'string',
+    },
     WARDEN_POLLING_INTERVAL_MSEC: {
       type: 'number',
+    },
+    WARDEN_CHAIN_ID: {
+      type: 'string',
     },
     WARDEN_CHAIN_PREFIX: {
       type: 'string',

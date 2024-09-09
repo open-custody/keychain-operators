@@ -6,7 +6,9 @@
 # example below
 
 WARDEN_RPC_URL=http://127.0.0.1:26657
+WARDEN_API_URL=http://127.0.0.1:1337
 WARDEN_POLLING_INTERVAL_MSEC=5000
+WARDEN_CHAIN_ID=warden
 WARDEN_CHAIN_PREFIX=warden
 WARDEN_SIGNER_MNEMONIC=test test test test test test test test test test test test test test test test test test test test test test test test
 WARDEN_SIGNER_DERIVATION_PATH=m/44'/60'/0'/0/0
@@ -27,7 +29,9 @@ BROKER_QUEUE_PREFETCH=1
 # example below
 
 WARDEN_RPC_URL=http://127.0.0.1:26657
+WARDEN_API_URL=http://127.0.0.1:1337
 WARDEN_POLLING_INTERVAL_MSEC=5000
+WARDEN_CHAIN_ID=warden
 WARDEN_CHAIN_PREFIX=warden
 WARDEN_SIGNER_MNEMONIC=test test test test test test test test test test test test test test test test test test test test test test test test
 WARDEN_SIGNER_DERIVATION_PATH="m/44'/60'/0'/0/0"
