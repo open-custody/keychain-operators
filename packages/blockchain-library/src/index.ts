@@ -114,7 +114,7 @@ export class WardenService {
 
     const resJson = await response.json();
 
-    return resJson.hash;
+    return resJson.txResponse.hash;
   }
 
   async *pollPendingKeyRequests(keychainId: bigint): AsyncGenerator<INewKeyRequest> {
