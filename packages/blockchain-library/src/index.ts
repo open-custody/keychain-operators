@@ -114,7 +114,7 @@ export class WardenService {
 
     const resJson = await response.json();
 
-    return resJson.txResponse.hash;
+    return resJson.tx_response.txhash;
   }
 
   async *pollPendingKeyRequests(keychainId: bigint): AsyncGenerator<INewKeyRequest> {
@@ -222,7 +222,7 @@ export class WardenService {
     }
   }
 
-  async fulfilKeyRequest(requestId: bigint, publicKey: Buffer): Promise<ITransactionState> {
+  async fulfilKeyRequest(requestId: bigint, publicKey: Buffer): Promise<ITransactionState | undefined> {
     const signer = await this.signer();
 
     const message = fulfilKeyRequest({
@@ -234,10 +234,10 @@ export class WardenService {
 
     const txHash = await this.signAndBroadcast(signer, [message]);
 
-    return this.waitTx(txHash);
+    return await this.waitTx(txHash);
   }
 
-  async fulfilSignatureRequest(requestId: bigint, signedData: Buffer): Promise<ITransactionState> {
+  async fulfilSignatureRequest(requestId: bigint, signedData: Buffer): Promise<ITransactionState | undefined> {
     const signer = await this.signer();
 
     const message = fulfilSignRequest({
@@ -251,10 +251,10 @@ export class WardenService {
 
     const txHash = await this.signAndBroadcast(signer, [message]);
 
-    return this.waitTx(txHash);
+    return await this.waitTx(txHash);
   }
 
-  async rejectKeyRequest(requestId: bigint, reason: string): Promise<ITransactionState> {
+  async rejectKeyRequest(requestId: bigint, reason: string): Promise<ITransactionState | undefined> {
     const signer = await this.signer();
 
     const message = fulfilKeyRequest({
@@ -266,10 +266,10 @@ export class WardenService {
 
     const txHash = await this.signAndBroadcast(signer, [message]);
 
-    return this.waitTx(txHash);
+    return await this.waitTx(txHash);
   }
 
-  async rejectSignatureRequest(requestId: bigint, reason: string): Promise<ITransactionState> {
+  async rejectSignatureRequest(requestId: bigint, reason: string): Promise<ITransactionState | undefined> {
     const signer = await this.signer();
 
     const message = fulfilSignRequest({
@@ -281,7 +281,7 @@ export class WardenService {
 
     const txHash = await this.signAndBroadcast(signer, [message]);
 
-    return this.waitTx(txHash);
+    return await this.waitTx(txHash);
   }
 
   async getKeyRequest(requestId: bigint): Promise<void | KeyRequest> {
@@ -302,7 +302,11 @@ export class WardenService {
       .catch((e) => logError(e));
   }
 
-  async waitTx(hash: string): Promise<ITransactionState> {
+  async waitTx(hash?: string): Promise<ITransactionState | undefined> {
+    if (!hash) {
+      return undefined;
+    }
+
     const query = (await this.query()).cosmos.tx;
 
     let transaction: GetTxResponse | null = null;
@@ -312,21 +316,21 @@ export class WardenService {
       await delay(1000);
     }
 
-    try {
-      this.locked = true;
+    this.locked = true;
 
-      while (!transaction && new Date().getTime() < timeout) {
+    while (!transaction && new Date().getTime() < timeout) {
+      try {
         transaction = await query.v1beta1.getTx({
           hash,
         });
-
-        await delay(1000);
+      } catch {
+        logError(`Failed to fetch transaction status: ${hash}`);
       }
-    } catch {
-      logError(`Failed to fetch transaction status: ${hash}`);
-    } finally {
-      this.locked = false;
+
+      await delay(1000);
     }
+
+    this.locked = false;
 
     if (!transaction) {
       throw new Error(`Failed to wait for transaction: ${hash}`);
