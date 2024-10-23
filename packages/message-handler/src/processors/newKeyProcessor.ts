@@ -21,6 +21,7 @@ export class NewKeyProcessor extends Processor<INewKeyRequestMessage> {
     logInfo(`New Key message ${serialize(data)}`);
 
     const requestId = BigInt(data.requestId);
+    logInfo(`New request id ${requestId}`);
 
     if (attempts === 0) {
       logError(`New Key message error after ${this.retryAttempts} attempts: ${serialize(data)}`);
@@ -41,6 +42,8 @@ export class NewKeyProcessor extends Processor<INewKeyRequestMessage> {
     }
 
     const publicKey = await handler.createKey(data);
+
+    logInfo(`New fulfillment: requestId = ${requestId}, public key = ${publicKey}`);
 
     return await this.fulfill(requestId, publicKey);
   }
