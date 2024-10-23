@@ -1588,23 +1588,10 @@
   resolved "https://registry.npmjs.org/@ungap/structured-clone/-/structured-clone-1.2.0.tgz"
   integrity sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==
 
-"@wardenprotocol/wardenjs@0.0.8":
-  version "0.0.8"
-  resolved "https://registry.yarnpkg.com/@wardenprotocol/wardenjs/-/wardenjs-0.0.8.tgz#53de454e97a49634b418a3ea43d6875d4e744b69"
-  integrity sha512-6FBB8d22JLWvCVwo/MS1TsI705oAMuJraN8UVqZrscd03ApXDalgPmCyCNjgFxsLmdOgjYep0p7OG2ZUqW2aVQ==
-  dependencies:
-    "@cosmjs/amino" "0.32.3"
-    "@cosmjs/math" "^0.32.3"
-    "@cosmjs/proto-signing" "0.32.3"
-    "@cosmjs/stargate" "0.32.3"
-    "@cosmjs/tendermint-rpc" "^0.32.3"
-    "@cosmology/lcd" "^0.13.3"
-    protobufjs "^7.2.6"
-
-"@wardenprotocol/wardenjs@0.0.9":
-  version "0.0.9"
-  resolved "https://registry.yarnpkg.com/@wardenprotocol/wardenjs/-/wardenjs-0.0.9.tgz#ec456e621073437d5799ac8fb340f58ee6ff7bc7"
-  integrity sha512-afP3dU9waoCD2HPVhxyKcPLnMfGKH/qLZJuGd3Hf9lY3DvqWT855nSUG/iMhndy6ir7+0Rktjpggzh9vIEYL0A==
+"@wardenprotocol/wardenjs@0.0.11":
+  version "0.0.11"
+  resolved "https://registry.yarnpkg.com/@wardenprotocol/wardenjs/-/wardenjs-0.0.11.tgz#0c3715a6ecb1e3f7c96494ee8663350909fb2e3f"
+  integrity sha512-x0xtyHgE6fO1G859cl//iqkrG/Jhz9JuxU6B9mubRUvriugTfURFfCPkEhUaL+gc7CZeeKYdvlhEJOUJO7RBfg==
   dependencies:
     "@cosmjs/amino" "0.32.3"
     "@cosmjs/math" "^0.32.3"

@@ -54,10 +54,26 @@ export class WardenService {
     };
   }
 
-  async signAndBroadcast(signer: ISigner, messages: EncodeObject[]) {
+  async account(signer: ISigner) {
     const query = (await this.query()).cosmos.auth.v1beta1;
-
     const { account } = await query.account({ address: signer.account });
+
+    if (account?.typeUrl === ethermint.types.v1.EthAccount.typeUrl) {
+      const ethAccount = ethermint.types.v1.EthAccount.decode(account.value);
+
+      if (!ethAccount.baseAccount) {
+        throw new Error('Failed to decode account eth account');
+      }
+
+      return ethAccount.baseAccount;
+    }
+
+    return account;
+  }
+
+  async signAndBroadcast(signer: ISigner, messages: EncodeObject[]) {
+    const account = await this.account(signer);
+
     const pubk = Any.fromPartial({
       typeUrl: PubKey.typeUrl,
       value: PubKey.encode({
