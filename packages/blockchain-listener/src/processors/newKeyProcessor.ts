@@ -26,7 +26,7 @@ export class NewKeyProcessor extends Processor<INewKeyRequest> {
         spaceId: data.spaceId.toString(),
       });
     } catch (error) {
-      logError(`New key error ${serialize(data)}. Error: ${error}`);
+      logError(`New key error ${serialize(data)}. Error: ${error}, Stack trace: ${error.stack}`);
 
       return false;
     }

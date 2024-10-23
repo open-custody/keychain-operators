@@ -1,4 +1,4 @@
-import { delay, logError } from '@warden/utils';
+import { logError } from '@warden/utils';
 import { Channel, Connection, connect } from 'amqplib';
 
 import { IMessageBrokerConfiguration } from './types/configuration.js';
