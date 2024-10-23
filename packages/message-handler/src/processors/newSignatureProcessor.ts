@@ -53,6 +53,8 @@ export class NewSignatureProcessor extends Processor<INewSignatureRequestMessage
       return await this.reject(requestId, result.reason!);
     }
 
+    logInfo(`New signature fulfillment: requestId = ${requestId}, signature = ${result.signature?.toString('base64')}`);
+
     return await this.fulfill(requestId, result.signature!);
   }
 

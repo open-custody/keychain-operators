@@ -2,6 +2,7 @@ import { toBech32 } from '@cosmjs/encoding';
 import { Int53 } from '@cosmjs/math';
 import { EncodeObject, TxBodyEncodeObject, makeAuthInfoBytes, makeSignDoc } from '@cosmjs/proto-signing';
 import * as utils from '@warden/utils';
+import { toUint8Array } from '@warden/utils';
 import { cosmos, ethermint, getSigningWardenClientOptions, google, warden } from '@wardenprotocol/wardenjs';
 import { PageRequest } from '@wardenprotocol/wardenjs/codegen/cosmos/base/query/v1beta1/pagination';
 import { GetTxResponse } from '@wardenprotocol/wardenjs/codegen/cosmos/tx/v1beta1/service';
@@ -244,7 +245,7 @@ export class WardenService {
     const message = fulfilKeyRequest({
       creator: signer.account,
       requestId: requestId,
-      key: { publicKey: publicKey },
+      key: { publicKey: toUint8Array(publicKey) },
       status: KeyRequestStatus.KEY_REQUEST_STATUS_FULFILLED,
     });
 
@@ -261,7 +262,7 @@ export class WardenService {
       requestId: requestId,
       status: SignRequestStatus.SIGN_REQUEST_STATUS_FULFILLED,
       payload: {
-        signedData: signedData,
+        signedData: toUint8Array(signedData),
       },
     });
 
