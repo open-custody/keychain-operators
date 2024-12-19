@@ -63,6 +63,10 @@ export class FordefiService {
 
     const response = await axios.get<Vaults>(url, { headers });
 
+    for (const vault of response.data.vaults) {
+      logInfo(vault.id + ' ' + vault.public_key_compressed);
+    }
+
     return {
       ...response.data,
       vaults: response.data.vaults.map((x) => ({
@@ -117,3 +121,6 @@ export class FordefiService {
 }
 
 export { Vault } from './types/vault/vault.js';
+function logInfo(public_key_compressed: string) {
+  throw new Error('Function not implemented.');
+}
