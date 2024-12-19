@@ -27,7 +27,7 @@ export class NewSignatureProcessor extends Processor<INewSignatureRequest> {
         signingData: Buffer.from(data.signingData).toString('base64'),
       });
     } catch (error) {
-      logError(`New Signature error ${serialize(data)}. Error: ${error}`);
+      logError(`New Signature error ${serialize(data)}. Error: ${error}, Stack trace: ${error.stack}`);
 
       return false;
     }

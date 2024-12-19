@@ -3,7 +3,9 @@ export interface Env {
   AWS_KMS_FORDEFI_CLIENT_PK_KEY_ID: string;
 
   WARDEN_RPC_URL: string;
+  WARDEN_API_URL: string;
   WARDEN_POLLING_INTERVAL_MSEC: number;
+  WARDEN_CHAIN_ID: string;
   WARDEN_CHAIN_PREFIX: string;
   WARDEN_SIGNER_MNEMONIC: string;
   WARDEN_SIGNER_GAS: number;

@@ -1,6 +1,6 @@
 import { WardenService } from '@warden/blockchain-library';
 import { INewKeyRequestMessage, KeyProvider, MessageBrokerConsumer } from '@warden/message-broker-library';
-import { logError, logInfo, serialize } from '@warden/utils';
+import { logError, logInfo, serialize, toUint8Array } from '@warden/utils';
 import { KeyRequestStatus } from '@wardenprotocol/wardenjs/codegen/warden/warden/v1beta3/key';
 
 import { IKeychainHandler } from '../keychains/keychainHandler.js';
@@ -21,6 +21,7 @@ export class NewKeyProcessor extends Processor<INewKeyRequestMessage> {
     logInfo(`New Key message ${serialize(data)}`);
 
     const requestId = BigInt(data.requestId);
+    logInfo(`New request id ${requestId}`);
 
     if (attempts === 0) {
       logError(`New Key message error after ${this.retryAttempts} attempts: ${serialize(data)}`);
@@ -42,16 +43,24 @@ export class NewKeyProcessor extends Processor<INewKeyRequestMessage> {
 
     const publicKey = await handler.createKey(data);
 
+    logInfo(`New fulfillment: requestId = ${requestId}, public key = ${publicKey.toString('base64')}`);
+
     return await this.fulfill(requestId, publicKey);
   }
 
   async fulfill(requestId: bigint, publiCKey: Buffer): Promise<boolean> {
     const transaction = await this.warden.fulfilKeyRequest(requestId, publiCKey);
+
+    logInfo(`Transaction fulfilled: ${serialize(transaction)}`);
+
     return transaction?.hash !== undefined && transaction?.errorCode === 0;
   }
 
   async reject(requestId: bigint, reason: string): Promise<boolean> {
     const transaction = await this.warden.rejectKeyRequest(requestId, reason);
+
+    logInfo(`Transaction rejected: ${serialize(transaction)}`);
+
     return transaction?.hash !== undefined && transaction?.errorCode === 0;
   }
 }

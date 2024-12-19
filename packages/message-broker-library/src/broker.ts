@@ -1,4 +1,4 @@
-import { delay, logError } from '@warden/utils';
+import { logError } from '@warden/utils';
 import { Channel, Connection, connect } from 'amqplib';
 
 import { IMessageBrokerConfiguration } from './types/configuration.js';
@@ -23,9 +23,10 @@ export abstract class MessageBroker {
 
         connection.once('close', async (error) => {
           logError(error);
+          process.exit(1);
 
-          await delay(this.configuration.reconnectMsec);
-          await this.initConnection();
+          // await delay(this.configuration.reconnectMsec);
+          // await this.initConnection();
         });
 
         this.connection = connection;
@@ -33,9 +34,10 @@ export abstract class MessageBroker {
       .then(async (_) => await this.initChannel())
       .catch(async (error) => {
         logError(error);
+        process.exit(1);
 
-        await delay(this.configuration.reconnectMsec);
-        await this.initConnection();
+        // await delay(this.configuration.reconnectMsec);
+        // await this.initConnection();
       });
   }
 
@@ -51,9 +53,10 @@ export abstract class MessageBroker {
 
         channel.once('close', async (error) => {
           logError(error);
+          process.exit(1);
 
-          await delay(this.configuration.reconnectMsec);
-          await this.initConnection();
+          // await delay(this.configuration.reconnectMsec);
+          // await this.initConnection();
         });
 
         this.channel = channel;
@@ -62,9 +65,10 @@ export abstract class MessageBroker {
       })
       .catch(async (error) => {
         logError(error);
+        process.exit(1);
 
-        await delay(this.configuration.reconnectMsec);
-        await this.initConnection();
+        // await delay(this.configuration.reconnectMsec);
+        // await this.initConnection();
       });
   }
 }

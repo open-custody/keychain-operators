@@ -1,6 +1,7 @@
-import { SigningStargateClient } from '@cosmjs/stargate';
+import { HDNodeWallet } from 'ethers';
 
 export interface ISigner {
-  client: SigningStargateClient;
+  wallet: HDNodeWallet;
   account: string;
+  signerPubKey: Uint8Array;
 }

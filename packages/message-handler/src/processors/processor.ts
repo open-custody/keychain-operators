@@ -31,7 +31,9 @@ export abstract class Processor<T> {
           } else {
             attempts--;
 
-            logError(`Error while handling the message: ${serialize(message)}. Error: ${error}`);
+            logError(
+              `Error while handling the message: ${serialize(message)}. Error: ${error}, Stack trace: ${error.stack}`,
+            );
 
             await delay(1000);
           }

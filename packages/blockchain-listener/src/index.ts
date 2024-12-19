@@ -10,8 +10,10 @@ import { NewSignatureProcessor } from './processors/newSignatureProcessor.js';
 export async function main(): Promise<void> {
   const warden = new WardenService({
     pollingIntervalMsec: config.WARDEN_POLLING_INTERVAL_MSEC,
+    chainId: config.WARDEN_CHAIN_ID,
     prefix: config.WARDEN_CHAIN_PREFIX,
     rpcURL: config.WARDEN_RPC_URL,
+    apiURL: config.WARDEN_API_URL,
     signerMnemonic: config.WARDEN_SIGNER_MNEMONIC,
     signerGas: config.WARDEN_SIGNER_GAS.toString(10),
     signerGasUwardAmount: config.WARDEN_SIGNER_GAS_UWARD.toString(10),
