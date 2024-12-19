@@ -39,7 +39,7 @@ export class FordefiKeychainHandler implements IKeychainHandler {
     let vault: Vault | undefined;
 
     for (let i = 1; vault === undefined; i++) {
-      const page = await this.fordefi.getVaults(name, i, 100);
+      const page = await this.fordefi.getVaults(name, i, 100, logInfo);
       vault = page.vaults.find((x) => x.public_key.equals(publicKey));
 
       if (page.vaults.length === 0) break;
