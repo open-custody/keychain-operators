@@ -50,7 +50,7 @@ export class FordefiService {
     return { ...vault, public_key: this.decompressPublicKey(vault.public_key_compressed, 'base64') };
   }
 
-  async getVaults(search: string, page: number, size: number): Promise<Vaults> {
+  async getVaults(search: string, page: number, size: number, logInfo: (string) => void): Promise<Vaults> {
     const url = new URL(
       `vaults?page=${page}&size=${size}&search=${search}`,
       this.configuration.fordefiAPIEndpoint,
@@ -121,6 +121,3 @@ export class FordefiService {
 }
 
 export { Vault } from './types/vault/vault.js';
-function logInfo(public_key_compressed: string) {
-  throw new Error('Function not implemented.');
-}
