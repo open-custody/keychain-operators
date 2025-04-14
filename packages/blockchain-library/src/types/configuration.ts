@@ -6,5 +6,6 @@ export interface IWardenConfiguration {
   pollingIntervalMsec: number;
   signerMnemonic: string;
   signerGas: string;
-  signerGasUwardAmount: string;
+  signerGasFeeAmount: string;
+  signerFeeDenom: string;
 }

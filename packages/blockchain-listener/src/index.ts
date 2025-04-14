@@ -16,7 +16,8 @@ export async function main(): Promise<void> {
     apiURL: config.WARDEN_API_URL,
     signerMnemonic: config.WARDEN_SIGNER_MNEMONIC,
     signerGas: config.WARDEN_SIGNER_GAS.toString(10),
-    signerGasUwardAmount: config.WARDEN_SIGNER_GAS_UWARD.toString(10),
+    signerGasFeeAmount: config.WARDEN_SIGNER_GAS_FEE_AMOUNT.toString(10),
+    signerFeeDenom: config.WARDEN_SIGNER_FEE_DENOM,
   });
 
   const newKeyRequestProducer = new MessageBrokerProducer({

@@ -97,7 +97,7 @@ export class WardenService {
     const gasLimit = Int53.fromString(this.configuration.signerGas).toNumber();
     const authInfoBytes = makeAuthInfoBytes(
       [{ pubkey: pubk, sequence: account!.sequence }],
-      [{ denom: 'award', amount: this.configuration.signerGasUwardAmount }],
+      [{ denom: this.configuration.signerFeeDenom, amount: this.configuration.signerGasFeeAmount }],
       gasLimit,
       undefined,
       undefined,

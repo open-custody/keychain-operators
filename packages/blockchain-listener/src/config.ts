@@ -12,7 +12,7 @@ const schema: JSONSchemaType<Env> = {
     'WARDEN_CHAIN_PREFIX',
     'WARDEN_SIGNER_MNEMONIC',
     'WARDEN_SIGNER_GAS',
-    'WARDEN_SIGNER_GAS_UWARD',
+    'WARDEN_SIGNER_GAS_FEE_AMOUNT',
     'WARDEN_FORDEFI_KEYCHAIN_ID',
     'BROKER_CONNECTION_STRING',
     'BROKER_NEW_KEY_QUEUE_NAME',
@@ -42,8 +42,11 @@ const schema: JSONSchemaType<Env> = {
     WARDEN_SIGNER_GAS: {
       type: 'number',
     },
-    WARDEN_SIGNER_GAS_UWARD: {
+    WARDEN_SIGNER_GAS_FEE_AMOUNT: {
       type: 'number',
+    },
+    WARDEN_SIGNER_FEE_DENOM: {
+      type: 'string'
     },
     WARDEN_FORDEFI_KEYCHAIN_ID: {
       type: 'string',

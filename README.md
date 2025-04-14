@@ -12,7 +12,7 @@ WARDEN_CHAIN_ID=warden
 WARDEN_CHAIN_PREFIX=warden
 WARDEN_SIGNER_MNEMONIC=test test test test test test test test test test test test test test test test test test test test test test test test
 WARDEN_SIGNER_GAS=400000
-WARDEN_SIGNER_GAS_UWARD=500
+WARDEN_SIGNER_GAS_FEE_AMOUNT=500
 WARDEN_FORDEFI_KEYCHAIN_ID=3
 
 BROKER_CONNECTION_STRING=amqps://user:password@host:5671
@@ -34,7 +34,8 @@ WARDEN_CHAIN_ID=warden
 WARDEN_CHAIN_PREFIX=warden
 WARDEN_SIGNER_MNEMONIC=test test test test test test test test test test test test test test test test test test test test test test test test
 WARDEN_SIGNER_GAS=400000
-WARDEN_SIGNER_GAS_UWARD=500
+WARDEN_SIGNER_GAS_FEE_AMOUNT=500
+WARDEN_SIGNER_FEE_DENOM='award'
 
 BROKER_CONNECTION_STRING=amqps://user:password@host:5671
 BROKER_NEW_KEY_QUEUE_NAME=warden-dev-new-key-request-id
