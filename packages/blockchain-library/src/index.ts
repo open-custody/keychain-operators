@@ -131,6 +131,8 @@ export class WardenService {
 
     const resJson = await response.json();
 
+    logInfo(`signAndBroadcast result: ${JSON.stringify(resJson)}`);
+
     return resJson.tx_response.txhash;
   }
 
