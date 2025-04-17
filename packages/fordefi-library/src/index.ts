@@ -101,7 +101,14 @@ export class FordefiService {
       'x-idempotence-id': idempontenceId,
     };
 
-    const response = await axios.post(url.toString(), createParams, { headers });
+    let response;
+    try {
+      response = await axios.post(url.toString(), createParams, { headers });
+    } catch (e) {
+      throw new Error(
+        `post ${url.toString()} error: ${JSON.stringify(e.response ? e.response.data : e.message, null, 2)}\n${JSON.stringify(JSON.parse(e.config.data), null, 2)}`,
+      );
+    }
     return response.data;
   }
 
