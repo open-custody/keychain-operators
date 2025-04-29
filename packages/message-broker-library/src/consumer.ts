@@ -8,17 +8,18 @@ export class MessageBrokerConsumer extends MessageBroker {
     configuration: IMessageBrokerConsumerConfiguration,
     handle: (message: T) => Promise<boolean | undefined>,
   ) {
-    await this.channel.prefetch(configuration.prefetch);
+    const channel = await this.getChannel();
+    await channel.prefetch(configuration.prefetch);
 
-    await this.channel.consume(
+    await channel.consume(
       this.configuration.queue,
       (message) => {
         const obj = JSON.parse(message!.content.toString());
 
         handle(obj)
           .then((handled) => {
-            if (handled) this.channel.ack(message!);
-            else this.channel.reject(message!, false);
+            if (handled) channel.ack(message!);
+            else channel.reject(message!, false);
           })
           .catch((e) => logError(e));
       },

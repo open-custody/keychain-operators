@@ -1,5 +1,5 @@
 import { WardenService } from '@warden/blockchain-library';
-import { KeyProvider, MessageBrokerProducer } from '@warden/message-broker-library';
+import { ConnectionManager, KeyProvider, MessageBrokerProducer } from '@warden/message-broker-library';
 import { logError } from '@warden/utils';
 import 'dotenv/config';
 
@@ -20,20 +20,29 @@ export async function main(): Promise<void> {
     signerFeeDenom: config.WARDEN_SIGNER_FEE_DENOM,
   });
 
-  const newKeyRequestProducer = new MessageBrokerProducer({
+  const connectionConfig = {
     connectionString: config.BROKER_CONNECTION_STRING,
-    queue: config.BROKER_NEW_KEY_QUEUE_NAME,
+    maxReconnectAttempts: 3,
     reconnectMsec: config.BROKER_RECONNECT_MSEC,
-  });
+  };
 
-  const newSignatureRequestProducer = new MessageBrokerProducer({
-    connectionString: config.BROKER_CONNECTION_STRING,
-    queue: config.BROKER_NEW_SIGNATURE_QUEUE_NAME,
-    reconnectMsec: config.BROKER_RECONNECT_MSEC,
-  });
+  const connectionManager = ConnectionManager.getInstance(connectionConfig);
 
-  await newKeyRequestProducer.initConnection();
-  await newSignatureRequestProducer.initConnection();
+  const newKeyRequestProducer = new MessageBrokerProducer(
+    {
+      queue: config.BROKER_NEW_KEY_QUEUE_NAME,
+    },
+    connectionManager,
+  );
+
+  const newSignatureRequestProducer = new MessageBrokerProducer(
+    {
+      queue: config.BROKER_NEW_SIGNATURE_QUEUE_NAME,
+    },
+    connectionManager,
+  );
+
+  await Promise.all([newKeyRequestProducer.initConnection(), newSignatureRequestProducer.initConnection()]);
 
   const newFordefiKeyRequestProcess = new NewKeyProcessor(
     BigInt(config.WARDEN_FORDEFI_KEYCHAIN_ID),

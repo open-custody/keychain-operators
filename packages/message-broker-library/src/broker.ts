@@ -1,74 +1,69 @@
 import { logError } from '@warden/utils';
-import { Channel, Connection, connect } from 'amqplib';
+import { Channel, Connection } from 'amqplib';
 
+import { ConnectionManager } from './connection.js';
 import { IMessageBrokerConfiguration } from './types/configuration.js';
 
 export abstract class MessageBroker {
-  channel: Channel;
-  connection: Connection;
+  channel: Channel | null = null;
   configuration: IMessageBrokerConfiguration;
+  private channelPromise: Promise<Channel> | null = null;
 
-  constructor(configuration: IMessageBrokerConfiguration) {
+  constructor(
+    configuration: IMessageBrokerConfiguration,
+    private connectionManager: ConnectionManager,
+  ) {
     this.configuration = configuration;
+    this.setupConnectionListeners();
+  }
+
+  private setupConnectionListeners(): void {
+    this.connectionManager.on('connectionClosed', () => {
+      this.channel = null;
+      this.channelPromise = null;
+    });
+
+    this.connectionManager.on('connectionEstablished', async (connection: Connection) => {
+      if (!this.channel) {
+        await this.initChannel(connection);
+      }
+    });
   }
 
   async initConnection(): Promise<void> {
-    await connect(this.configuration.connectionString)
-      .then(async (connection) => {
-        connection.once('error', async (error) => {
-          logError(error);
-
-          await connection.close().catch((e) => logError(e));
-        });
-
-        connection.once('close', async (error) => {
-          logError(error);
-          process.exit(1);
-
-          // await delay(this.configuration.reconnectMsec);
-          // await this.initConnection();
-        });
-
-        this.connection = connection;
-      })
-      .then(async (_) => await this.initChannel())
-      .catch(async (error) => {
-        logError(error);
-        process.exit(1);
-
-        // await delay(this.configuration.reconnectMsec);
-        // await this.initConnection();
-      });
+    const connection = await this.connectionManager.getConnection();
+    await this.initChannel(connection);
   }
 
-  async initChannel(): Promise<void> {
-    await this.connection
-      .createChannel()
-      .then(async (channel) => {
-        channel.once('error', async (error) => {
-          logError(error);
+  private async initChannel(connection: Connection): Promise<void> {
+    try {
+      const channel = await connection.createChannel();
 
-          await channel.close().catch((e) => logError(e));
-        });
-
-        channel.once('close', async (error) => {
-          logError(error);
-          process.exit(1);
-
-          // await delay(this.configuration.reconnectMsec);
-          // await this.initConnection();
-        });
-
-        this.channel = channel;
-
-        await channel.assertQueue(this.configuration.queue, { durable: true });
-      })
-      .catch(async (error) => {
-        logError(error);
-        process.exit(1);
-
-        // await delay(this.configuration.reconnectMsec);
-        // await this.initConnection();
+      channel.once('error', async (error) => {
+        logError(`channel emitted 'error': ${error}`);
       });
+
+      channel.once('close', async (error) => {
+        logError(`channel emitted 'close': ${error}`);
+      });
+
+      this.channel = channel;
+      await channel.assertQueue(this.configuration.queue, { durable: true });
+    } catch (error) {
+      logError(error);
+      process.exit(1);
+    }
+  }
+
+  protected async getChannel(): Promise<Channel> {
+    if (this.channel) {
+      return this.channel;
+    }
+
+    if (!this.channelPromise) {
+      this.channelPromise = this.initConnection().then(() => this.channel!);
+    }
+
+    return this.channelPromise;
   }
 }

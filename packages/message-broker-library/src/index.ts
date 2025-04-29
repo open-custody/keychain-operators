@@ -1,3 +1,4 @@
+import { ConnectionManager } from './connection.js';
 import { MessageBrokerConsumer } from './consumer.js';
 import { MessageBrokerProducer } from './producer.js';
 import { KeyProvider } from './types/keyProvider.js';
@@ -12,4 +13,5 @@ export {
   ISignatureStatusMessage,
   MessageBrokerProducer,
   MessageBrokerConsumer,
+  ConnectionManager,
 };
