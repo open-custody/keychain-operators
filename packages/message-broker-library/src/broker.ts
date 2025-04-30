@@ -18,15 +18,17 @@ export abstract class MessageBroker {
   }
 
   private setupConnectionListeners(): void {
-    this.connectionManager.on('connectionClosed', () => {
+    this.connectionManager.on('connectionClosed', async () => {
       this.channel = null;
       this.channelPromise = null;
+      await this.onConnectionClosed();
     });
 
     this.connectionManager.on('connectionEstablished', async (connection: Connection) => {
       if (!this.channel) {
         await this.initChannel(connection);
       }
+      await this.onConnectionEstablished();
     });
   }
 
@@ -65,5 +67,13 @@ export abstract class MessageBroker {
     }
 
     return this.channelPromise;
+  }
+
+  protected async onConnectionClosed(): Promise<void> {
+    // To be implemented by subclasses
+  }
+
+  protected async onConnectionEstablished(): Promise<void> {
+    // To be implemented by subclasses
   }
 }

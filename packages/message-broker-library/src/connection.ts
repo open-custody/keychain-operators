@@ -107,16 +107,15 @@ export class ConnectionManager extends EventEmitter {
         // 'close' will also be emitted, after 'error'
       });
 
-      connection.once('close', async (error) => {
+      connection.once('close', (error) => {
         logError(`connection emitted 'close': ${error}`);
         if (isFatalError(error)) {
           process.exit(1);
         }
         this.connection = null;
-        this.connectionPromise = null;
         this.lastErrorEventTime = Date.now();
         this.emit('connectionClosed');
-        await this.attemptReconnect(true);
+        this.connectionPromise = this.attemptReconnect(true).then(() => this.connection!);
       });
 
       this.connection = connection;
@@ -125,10 +124,9 @@ export class ConnectionManager extends EventEmitter {
       this.emit('connectionEstablished', connection);
       return connection;
     } catch (error) {
-      logError(error);
-      this.connectionPromise = null;
-      await this.attemptReconnect(false);
-      throw error;
+      logError(`Connection error: ${error}`);
+      this.connectionPromise = this.attemptReconnect(false).then(() => this.connection!);
+      return await this.connectionPromise;
     }
   }
 }
