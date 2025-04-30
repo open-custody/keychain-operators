@@ -34,6 +34,7 @@ export async function main(): Promise<void> {
       queue: config.BROKER_NEW_KEY_QUEUE_NAME,
     },
     connectionManager,
+    'newKeyRequestProducer',
   );
 
   const newSignatureRequestProducer = new MessageBrokerProducer(
@@ -41,9 +42,8 @@ export async function main(): Promise<void> {
       queue: config.BROKER_NEW_SIGNATURE_QUEUE_NAME,
     },
     connectionManager,
+    'newSignatureRequestProducer',
   );
-
-  await Promise.all([newKeyRequestProducer.initConnection(), newSignatureRequestProducer.initConnection()]);
 
   const newFordefiKeyRequestProcess = new NewKeyProcessor(
     BigInt(config.WARDEN_FORDEFI_KEYCHAIN_ID),

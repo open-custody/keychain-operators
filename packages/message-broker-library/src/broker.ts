@@ -12,6 +12,7 @@ export abstract class MessageBroker {
   constructor(
     configuration: IMessageBrokerConfiguration,
     private connectionManager: ConnectionManager,
+    private tag: string,
   ) {
     this.configuration = configuration;
     this.setupConnectionListeners();
@@ -25,14 +26,14 @@ export abstract class MessageBroker {
     });
 
     this.connectionManager.on('connectionEstablished', async (connection: Connection) => {
-      if (!this.channel) {
+      if (!this.channel && !this.channelPromise) {
         await this.initChannel(connection);
       }
       await this.onConnectionEstablished();
     });
   }
 
-  async initConnection(): Promise<void> {
+  private async initConnection(): Promise<void> {
     const connection = await this.connectionManager.getConnection();
     await this.initChannel(connection);
   }
@@ -50,9 +51,9 @@ export abstract class MessageBroker {
       });
 
       this.channel = channel;
-      logInfo(`Broker channel established`);
+      logInfo(`${this.tag}: broker channel established`);
       await channel.assertQueue(this.configuration.queue, { durable: true });
-      logInfo(`Queue ${this.configuration.queue} asserted`);
+      logInfo(`${this.tag}: queue ${this.configuration.queue} asserted`);
     } catch (error) {
       logError(error);
       process.exit(1);
@@ -68,7 +69,7 @@ export abstract class MessageBroker {
       this.channelPromise = this.initConnection().then(() => this.channel!);
     }
 
-    return this.channelPromise;
+    return this.channelPromise!;
   }
 
   protected async onConnectionClosed(): Promise<void> {

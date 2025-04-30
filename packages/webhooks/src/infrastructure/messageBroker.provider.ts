@@ -19,9 +19,8 @@ export const messageBrokerProducer = {
         queue: process.env.BROKER_SIGNATURE_STATUS_QUEUE_NAME!,
       },
       connectionManager,
+      'messageBrokerProducer',
     );
-
-    await messageBrokerProducer.initConnection();
 
     return messageBrokerProducer;
   },

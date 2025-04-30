@@ -46,6 +46,7 @@ export async function main(): Promise<void> {
       queue: config.BROKER_NEW_KEY_QUEUE_NAME,
     },
     connectionManager,
+    'newKeyRequestConsumer',
   );
 
   const newSignatureRequestConsumer = new MessageBrokerConsumer(
@@ -53,6 +54,7 @@ export async function main(): Promise<void> {
       queue: config.BROKER_NEW_SIGNATURE_QUEUE_NAME,
     },
     connectionManager,
+    'newSignatureRequestConsumer',
   );
 
   const signatureStatusConsumer = new MessageBrokerConsumer(
@@ -60,13 +62,8 @@ export async function main(): Promise<void> {
       queue: config.BROKER_SIGNATURE_STATUS_QUEUE_NAME,
     },
     connectionManager,
+    'signatureStatusConsumer',
   );
-
-  await Promise.all([
-    newKeyRequestConsumer.initConnection(),
-    newSignatureRequestConsumer.initConnection(),
-    signatureStatusConsumer.initConnection(),
-  ]);
 
   const handlers = new Map<KeyProvider, IKeychainHandler>([
     [
