@@ -7,8 +7,9 @@ export const messageBrokerProducer = {
   useFactory: async () => {
     const connectionConfig = {
       connectionString: process.env.BROKER_CONNECTION_STRING!,
-      maxReconnectAttempts: 3,
+      maxReconnectAttempts: +process.env.BROKER_MAX_RECONNECT_ATTEMPTS!,
       reconnectMsec: +process.env.BROKER_RECONNECT_MSEC!,
+      errorEventResetPeriodMs: +process.env.BROKER_ERROR_EVENT_RESET_PERIOD_MS!,
     };
 
     const connectionManager = ConnectionManager.getInstance(connectionConfig);

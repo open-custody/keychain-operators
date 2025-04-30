@@ -23,6 +23,8 @@ const schema: JSONSchemaType<Env> = {
     'BROKER_RECONNECT_MSEC',
     'BROKER_QUEUE_PREFETCH',
     'BROKER_CONSUMER_RETRY_ATTEMPTS',
+    'BROKER_MAX_RECONNECT_ATTEMPTS',
+    'BROKER_ERROR_EVENT_RESET_PERIOD_MS',
     'FORDEFI_ACCESS_TOKEN',
     'FORDEFI_API_ENDPOINT',
     'FORDEFI_UUIDV5_NAMESPACE',
@@ -94,6 +96,12 @@ const schema: JSONSchemaType<Env> = {
     },
     FORDEFI_API_USER_NAME: {
       type: 'string',
+    },
+    BROKER_MAX_RECONNECT_ATTEMPTS: {
+      type: 'number',
+    },
+    BROKER_ERROR_EVENT_RESET_PERIOD_MS: {
+      type: 'number',
     },
   },
 };

@@ -22,8 +22,9 @@ export async function main(): Promise<void> {
 
   const connectionConfig = {
     connectionString: config.BROKER_CONNECTION_STRING,
-    maxReconnectAttempts: 3,
+    maxReconnectAttempts: config.BROKER_MAX_RECONNECT_ATTEMPTS,
     reconnectMsec: config.BROKER_RECONNECT_MSEC,
+    errorEventResetPeriodMs: config.BROKER_ERROR_EVENT_RESET_PERIOD_MS,
   };
 
   const connectionManager = ConnectionManager.getInstance(connectionConfig);

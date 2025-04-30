@@ -7,6 +7,7 @@ export interface IConnectionConfig {
   connectionString: string;
   maxReconnectAttempts: number;
   reconnectMsec: number;
+  errorEventResetPeriodMs: number;
 }
 
 export class ConnectionManager extends EventEmitter {
@@ -16,7 +17,6 @@ export class ConnectionManager extends EventEmitter {
   private connectAttempts: number = 0;
   private errorEventAttempts: number = 0;
   private lastErrorEventTime: number = 0;
-  private readonly ERROR_EVENT_RESET_PERIOD_MS = 5 * 60 * 1000; // 5 minutes
   private isShuttingDown: boolean = false;
 
   private constructor(private config: IConnectionConfig) {
@@ -79,7 +79,7 @@ export class ConnectionManager extends EventEmitter {
 
   private resetErrorEventCounter(): void {
     const now = Date.now();
-    if (now - this.lastErrorEventTime > this.ERROR_EVENT_RESET_PERIOD_MS) {
+    if (now - this.lastErrorEventTime > this.config.errorEventResetPeriodMs) {
       this.errorEventAttempts = 0;
       this.lastErrorEventTime = now;
     }
