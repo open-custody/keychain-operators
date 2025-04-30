@@ -1,6 +1,7 @@
 import { WardenService } from '@warden/blockchain-library';
 import { FordefiService } from '@warden/fordefi-library';
 import { KeyProvider, MessageBrokerConsumer } from '@warden/message-broker-library';
+import { ConnectionManager } from '@warden/message-broker-library';
 import { logError } from '@warden/utils';
 import 'dotenv/config';
 
@@ -31,27 +32,38 @@ export async function main(): Promise<void> {
     awsKmsKeyId: config.AWS_KMS_FORDEFI_CLIENT_PK_KEY_ID,
   });
 
-  const newKeyRequestConsumer = new MessageBrokerConsumer({
+  const connectionConfig = {
     connectionString: config.BROKER_CONNECTION_STRING,
-    queue: config.BROKER_NEW_KEY_QUEUE_NAME,
+    maxReconnectAttempts: config.BROKER_MAX_RECONNECT_ATTEMPTS,
     reconnectMsec: config.BROKER_RECONNECT_MSEC,
-  });
+    errorEventResetPeriodMs: config.BROKER_ERROR_EVENT_RESET_PERIOD_MS,
+  };
 
-  const newSignatureRequestConsumer = new MessageBrokerConsumer({
-    connectionString: config.BROKER_CONNECTION_STRING,
-    queue: config.BROKER_NEW_SIGNATURE_QUEUE_NAME,
-    reconnectMsec: config.BROKER_RECONNECT_MSEC,
-  });
+  const connectionManager = ConnectionManager.getInstance(connectionConfig);
 
-  const signatureStatusConsumer = new MessageBrokerConsumer({
-    connectionString: config.BROKER_CONNECTION_STRING,
-    queue: config.BROKER_SIGNATURE_STATUS_QUEUE_NAME,
-    reconnectMsec: config.BROKER_RECONNECT_MSEC,
-  });
+  const newKeyRequestConsumer = new MessageBrokerConsumer(
+    {
+      queue: config.BROKER_NEW_KEY_QUEUE_NAME,
+    },
+    connectionManager,
+    'newKeyRequestConsumer',
+  );
 
-  await newKeyRequestConsumer.initConnection();
-  await newSignatureRequestConsumer.initConnection();
-  await signatureStatusConsumer.initConnection();
+  const newSignatureRequestConsumer = new MessageBrokerConsumer(
+    {
+      queue: config.BROKER_NEW_SIGNATURE_QUEUE_NAME,
+    },
+    connectionManager,
+    'newSignatureRequestConsumer',
+  );
+
+  const signatureStatusConsumer = new MessageBrokerConsumer(
+    {
+      queue: config.BROKER_SIGNATURE_STATUS_QUEUE_NAME,
+    },
+    connectionManager,
+    'signatureStatusConsumer',
+  );
 
   const handlers = new Map<KeyProvider, IKeychainHandler>([
     [

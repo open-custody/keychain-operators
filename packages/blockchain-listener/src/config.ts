@@ -19,6 +19,8 @@ const schema: JSONSchemaType<Env> = {
     'BROKER_NEW_SIGNATURE_QUEUE_NAME',
     'BROKER_RECONNECT_MSEC',
     'BROKER_QUEUE_PREFETCH',
+    'BROKER_MAX_RECONNECT_ATTEMPTS',
+    'BROKER_ERROR_EVENT_RESET_PERIOD_MS',
   ],
   properties: {
     WARDEN_RPC_URL: {
@@ -46,7 +48,7 @@ const schema: JSONSchemaType<Env> = {
       type: 'number',
     },
     WARDEN_SIGNER_FEE_DENOM: {
-      type: 'string'
+      type: 'string',
     },
     WARDEN_FORDEFI_KEYCHAIN_ID: {
       type: 'string',
@@ -64,6 +66,12 @@ const schema: JSONSchemaType<Env> = {
       type: 'number',
     },
     BROKER_QUEUE_PREFETCH: {
+      type: 'number',
+    },
+    BROKER_MAX_RECONNECT_ATTEMPTS: {
+      type: 'number',
+    },
+    BROKER_ERROR_EVENT_RESET_PERIOD_MS: {
       type: 'number',
     },
   },

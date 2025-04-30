@@ -5,7 +5,8 @@ import { MessageBroker } from './broker.js';
 export class MessageBrokerProducer extends MessageBroker {
   async publish<T>(message: T): Promise<boolean> {
     const bytes = Buffer.from(serialize(message));
+    const channel = await this.getChannel();
 
-    return this.channel.sendToQueue(this.configuration.queue, bytes, { persistent: true });
+    return channel.sendToQueue(this.configuration.queue, bytes, { persistent: true });
   }
 }
