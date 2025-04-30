@@ -52,7 +52,7 @@ export abstract class MessageBroker {
 
       this.channel = channel;
       logInfo(`${this.tag}: broker channel established`);
-      await channel.assertQueue(this.configuration.queue, { durable: true });
+      await channel.assertQueue(this.configuration.queue, { durable: true, arguments: { 'x-queue-type': 'quorum' } });
       logInfo(`${this.tag}: queue ${this.configuration.queue} asserted`);
     } catch (error) {
       logError(error);
