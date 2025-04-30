@@ -1,4 +1,4 @@
-import { delay, logError } from '@warden/utils';
+import { delay, logError, logInfo } from '@warden/utils';
 import { Connection, connect } from 'amqplib';
 import { isFatalError } from 'amqplib/lib/connection.js';
 import { EventEmitter } from 'events';
@@ -122,6 +122,7 @@ export class ConnectionManager extends EventEmitter {
       this.connectAttempts = 0;
       this.resetErrorEventCounter();
       this.emit('connectionEstablished', connection);
+      logInfo('Broker connection established');
       return connection;
     } catch (error) {
       logError(`Connection error: ${error}`);

@@ -1,4 +1,4 @@
-import { logError } from '@warden/utils';
+import { logError, logInfo } from '@warden/utils';
 import { Channel, Connection } from 'amqplib';
 
 import { ConnectionManager } from './connection.js';
@@ -50,7 +50,9 @@ export abstract class MessageBroker {
       });
 
       this.channel = channel;
+      logInfo(`Broker channel established`);
       await channel.assertQueue(this.configuration.queue, { durable: true });
+      logInfo(`Queue ${this.configuration.queue} asserted`);
     } catch (error) {
       logError(error);
       process.exit(1);
