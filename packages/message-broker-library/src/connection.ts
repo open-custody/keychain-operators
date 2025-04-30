@@ -1,6 +1,6 @@
 import { delay, logError } from '@warden/utils';
 import { Connection, connect } from 'amqplib';
-import { isFatalError } from 'amqplib/lib/connection';
+import { isFatalError } from 'amqplib/lib/connection.js';
 import { EventEmitter } from 'events';
 
 export interface IConnectionConfig {
