@@ -50,7 +50,7 @@ export class FordefiService {
     return { ...vault, public_key: this.decompressPublicKey(vault.public_key_compressed, 'base64') };
   }
 
-  async getVaults(search: string, page: number, size: number): Promise<Vaults> {
+  async getVaults(search: string, page: number, size: number, logInfo: (string) => void): Promise<Vaults> {
     const url = new URL(
       `vaults?page=${page}&size=${size}&search=${search}`,
       this.configuration.fordefiAPIEndpoint,
@@ -62,6 +62,10 @@ export class FordefiService {
     };
 
     const response = await axios.get<Vaults>(url, { headers });
+
+    for (const vault of response.data.vaults) {
+      logInfo(vault.id + ' ' + vault.public_key_compressed);
+    }
 
     return {
       ...response.data,
